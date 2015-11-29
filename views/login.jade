@@ -1,0 +1,16 @@
+html
+  head
+    title="login"
+  body
+    h1="Login requested"
+    form(method="POST", action="/oauth/login")
+      | username : 
+      input(type="text", name="username")
+      br
+      | password :
+      input(type="password", name="password")
+      br
+      input(type="submit", value="SUBMIT")
+      input(type="hidden", name="redirect", value=redirect)
+      input(type="hidden", name="client_id", value=client_id)
+      input(type="hidden", name="redirect_uri", value=redirect_uri)
