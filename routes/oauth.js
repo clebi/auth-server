@@ -4,7 +4,8 @@ var express = require('express'),
 
 oauth = oauthServer({
   model: require('../oauthModel'),
-  grants: ['auth_code', 'password'],
+  grants: ['authorization_code', 'password'],
+  authCodeLifetime: 1200,
   debug: true
 });
 
@@ -71,5 +72,7 @@ router.post('/login', function (req, res, next) {
         req.body.client_id + '&redirect_uri=' + req.body.redirect_uri);
   }
 });
+
+router.use(oauth.errorHandler());
 
 module.exports = router
