@@ -7,8 +7,8 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        authCode.belongsTo(models.OauthClient, {foreign_key: 'client_id'});
-        authCode.belongsTo(models.User, {foreign_key: 'user_id'});
+        authCode.belongsTo(models.OauthClient, {foreignKey: 'fk_client_id'});
+        authCode.belongsTo(models.User, {foreignKey: 'fk_user_id'});
       }
     }
   });
