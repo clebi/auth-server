@@ -8,7 +8,7 @@ module.exports = function(sequelize, DataTypes) {
   }, {
     classMethods: {
       associate: function(models) {
-        OauthClient.hasMany(models.AuthCode, {foreignKey: 'fk_client_id'});
+        OauthClient.hasMany(models.OauthCode, {foreignKey: 'fk_client_id'});
         OauthClient.hasMany(models.OauthAccessToken, {foreignKey: 'fk_client_id'});
       }
     }

@@ -61,7 +61,7 @@ model.grantTypeAllowed = function (clientId, grantType, callback) {
 };
 
 model.getAuthCode = function(authCode, callback) {
-  models.AuthCode.findOne({
+  models.OauthCode.findOne({
     where: {
       code: authCode
     }
@@ -97,18 +97,19 @@ model.saveAuthCode = function(authCode, clientId, expires, user, callback) {
     }).then(function(user) {
       if(!user)
         callback("unable to find user");
-      return models.AuthCode.create({
+      return models.OauthCode.create({
         code: authCode,
         expires: expires
       }).then(function(code) {
-        return client.addAuthCode(code).then(function(client) {
-          return user.addAuthCode(code).then(function(user) {
+        return client.addOauthCode(code).then(function(client) {
+          return user.addOauthCode(code).then(function(user) {
             callback();
           });
         });
       });
     });
   }).catch(function(error) {
+    console.log(error);
     callback(error);
   });
 };

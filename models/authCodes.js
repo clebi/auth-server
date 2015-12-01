@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = function(sequelize, DataTypes) {
-  var authCode = sequelize.define('AuthCode', {
+  var authCode = sequelize.define('OauthCode', {
     code: {type: DataTypes.STRING, primaryKey: true},
     expires: DataTypes.DATE
   }, {
