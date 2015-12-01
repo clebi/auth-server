@@ -3,7 +3,6 @@ var models = require('./models'),
   model = module.exports;
 
 model.getAccessToken = function(bearerToken, callback) {
-  console.log('token: ', bearerToken);
   models.sequelize.transaction(function(t) {
     return models.OauthAccessToken.findOne({
       where: {
@@ -11,7 +10,7 @@ model.getAccessToken = function(bearerToken, callback) {
       }
     }, {transaction: t}).then(function(token) {
       if(!token)
-        callback("missing token");
+        return callback();
       return token.getUser({transaction: t}).then(function(user) {
         callback(false, {
           expires: token.expires,
@@ -32,14 +31,14 @@ model.saveAccessToken = function (accessToken, clientId, expires, user, callback
       }
     }, {transaction: t}).then(function(client) {
       if(!client)
-        return callback("unable to find client");
+        return callback();
       return models.User.findOne({
         where: {
           user_id: user.id
         }
       }, {transaction: t}).then(function(user) {
         if(!user)
-          return callback("unable to find user");
+          return callback();
         return models.OauthAccessToken.create({
           access_token: accessToken,
           expires: expires
@@ -65,9 +64,9 @@ model.getClient = function(clientId, clientSecret, callback) {
       }
     }, {transaction: t}).then(function(oauthClient) {
       if(!oauthClient)
-        return callback("unable to find client");
+        return callback();
       if(clientSecret !== null && oauthClient.client_secret !== clientSecret)
-        return callback("secret is wrong");
+        return callback();
       callback(null, {
         clientId: oauthClient.client_id,
         clientSecret: oauthClient.client_secret,
@@ -91,7 +90,7 @@ model.getAuthCode = function(authCode, callback) {
       }
     }, {transaction: t}).then(function(code) {
       if(!code)
-        callback('unable to find auth code');
+        return callback();
       return code.getOauthClient({transaction: t}).then(function(client) {
         return code.getUser({transaction: t}).then(function(user) {
           callback(false, {
@@ -115,14 +114,14 @@ model.saveAuthCode = function(authCode, clientId, expires, user, callback) {
       }
     }, {transaction: t}).then(function(client) {
       if(!client)
-        callback("unable to find client");
+        return callback();
       return models.User.findOne({
         where: {
           user_id: user
         }
       }, {transaction: t}).then(function(user) {
         if(!user)
-          callback("unable to find user");
+          return callback();
         return models.OauthCode.create({
           code: authCode,
           expires: expires
