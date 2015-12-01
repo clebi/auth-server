@@ -3,7 +3,7 @@ var express = require('express'),
     models = require('../models'),
     router = express.Router();
 
-oauth = oauthServer({
+var oauth = oauthServer({
   model: require('../oauthModel'),
   grants: ['authorization_code', 'password'],
   authCodeLifetime: 1200,

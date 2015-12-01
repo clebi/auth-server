@@ -4,6 +4,24 @@ var models = require('./models'),
 
 model.getAccessToken = function(bearerToken, callback) {
   console.log('token: ', bearerToken);
+  models.sequelize.transaction(function(t) {
+    return models.OauthAccessToken.findOne({
+      where: {
+        access_token: bearerToken
+      }
+    }, {transaction: t}).then(function(token) {
+      if(!token)
+        callback("missing token");
+      return token.getUser({transaction: t}).then(function(user) {
+        callback(false, {
+          expires: token.expires,
+          user: user
+        });
+      });
+    });
+  }).catch(function(error) {
+    callback(error);
+  });
 };
 
 model.saveAccessToken = function (accessToken, clientId, expires, user, callback) {

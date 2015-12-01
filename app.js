@@ -6,12 +6,20 @@ var bodyParser = require('body-parser');
 var oauhtServer = require('oauth2-server');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+var oauthServer = require('oauth2-server');
 
 var routes = require('./routes/index');
 var oauth = require('./routes/oauth');
 var users = require('./routes/users');
 
 var app = express();
+
+app.oauth = oauthServer({
+  model: require('./oauthModel'),
+  grants: ['authorization_code', 'password'],
+  authCodeLifetime: 1200,
+  debug: true
+});
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -27,7 +35,9 @@ app.set('view engine', 'jade');
 
 app.use('/', routes);
 app.use('/oauth', oauth);
-// app.use('/users', app.oauth.authorise(), users);
+app.use('/users', app.oauth.authorise(), users);
+
+app.use(app.oauth.errorHandler());
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
