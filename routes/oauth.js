@@ -28,8 +28,6 @@ router.get('/authorize', function (req, res, next) {
 
 // Handle authorise
 router.post('/authorize', function (req, res, next) {
-  console.log('response_type', req.body);
-  console.log('allow: ', req.body.allow, ' - ', typeof(req.body.allow));
   if (!req.session.user) {
     return res.redirect('/login?client_id=' + req.query.client_id +
       '&redirect_uri=' + req.query.redirect_uri);
