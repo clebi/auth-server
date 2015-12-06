@@ -76,4 +76,4 @@ router.post('/login', function (req, res, next) {
 
 router.use(oauth.errorHandler());
 
-module.exports = router
+module.exports = router;

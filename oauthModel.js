@@ -99,7 +99,7 @@ model.getAuthCode = function(authCode, callback) {
             userId: user.user_id
           });
         });
-      })
+      });
     }).catch(function(error) {
       callback(error);
     });
