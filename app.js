@@ -15,7 +15,7 @@ var users = require('./routes/users');
 var app = express();
 
 app.oauth = oauthServer({
-  model: require('./oauthModel'),
+  model: require('./services/oauthService'),
   grants: ['authorization_code', 'password'],
   authCodeLifetime: 1200,
   debug: true
