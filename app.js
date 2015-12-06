@@ -1,12 +1,12 @@
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
-var logger = require('morgan');
 var bodyParser = require('body-parser');
-var oauhtServer = require('oauth2-server');
+var oauthServer = require('oauth2-server');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var oauthServer = require('oauth2-server');
+var winston = require('winston');
+var expressWinston = require('express-winston');
 
 var routes = require('./routes/index');
 var oauth = require('./routes/oauth');
@@ -23,10 +23,25 @@ app.oauth = oauthServer({
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger('dev'));
+app.use(expressWinston.logger({
+  transports: [
+    new winston.transports.Console({
+      json: false,
+      colorize: true
+    }),
+  ],
+  meta: false,
+  msg: "HTTP {{req.method}} {{req.url}}",
+  expressFormat: true,
+  colorStatus: true,
+  ignoreRoute: function (req, res) { return false; }
+}));
+
 app.use(cookieParser());
 app.use(session({
-  secret: 'keyboard cat'
+  secret: 'expapp',
+  resave: false,
+  saveUninitialized: true
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
