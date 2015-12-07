@@ -5,3 +5,10 @@ server:
 logging:
   app:
     level: info
+
+database:
+  host: host.vnet
+  username: expapp
+  password: expapp
+  database: expapp
+  dialect: postgres
