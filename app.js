@@ -2,8 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-var winston = require('winston');
-var expressWinston = require('express-winston');
+var loggers = require('./config/loggers');
 
 var oauth = require('./routes/oauth');
 
@@ -11,21 +10,7 @@ var app = express();
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(expressWinston.logger({
-  transports: [
-    new winston.transports.Console({
-      json: false,
-      colorize: true
-    })
-  ],
-  meta: false,
-  msg: 'HTTP {{req.method}} {{req.url}}',
-  expressFormat: true,
-  colorStatus: true,
-  ignoreRoute: function() {
-    return false;
-  }
-}));
+app.use(loggers.express);
 
 app.use(cookieParser());
 app.use(session({

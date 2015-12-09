@@ -2,9 +2,13 @@ server:
   listen_addr: localhost
   port: 3000
 
-logging:
-  app:
-    level: info
+  logging:
+    app:
+      console:
+        level: info
+    express:
+      console:
+        level: info
 
 database:
   host: host.vnet

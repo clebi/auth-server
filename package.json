@@ -13,6 +13,7 @@
     "express-session": "~1.12.1",
     "express-winston": "~0.4.1",
     "jade": "^1.11.0",
+    "moment": "~2.10.6",
     "morgan": "~1.6.1",
     "nconf": "~0.8.2",
     "nconf-yaml": "~1.0.1",
