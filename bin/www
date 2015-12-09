@@ -5,9 +5,7 @@
  */
 
 var app = require('../app');
-var debug = require('debug')('expapp:server');
 var http = require('http');
-var models = require('../models');
 var config = require('../config/config');
 var loggers = require('../config/loggers');
 
@@ -27,7 +25,9 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 /**
- * Normalize a port into a number, string, or false.
+ * [normalizePort description]
+ * @param  {string} val the port to normalize
+ * @return {int} normalized port
  */
 function normalizePort(val) {
   var port = parseInt(val, 10);
@@ -46,7 +46,8 @@ function normalizePort(val) {
 }
 
 /**
- * Event listener for HTTP server "error" event.
+ * Error event
+ * @param  {Error} error raised error
  */
 function onError(error) {
   if (error.syscall !== 'listen') {

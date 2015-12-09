@@ -1,7 +1,7 @@
-var winston = require('winston'),
-  config = require('./config');
+var winston = require('winston');
+var config = require('./config');
 
-var loggers = module.exports = {
+module.exports = {
   app: new (winston.Logger)({
     transports: [
       new winston.transports.Console({

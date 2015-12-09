@@ -1,6 +1,4 @@
 var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
 var bodyParser = require('body-parser');
 var oauthServer = require('oauth2-server');
 var cookieParser = require('cookie-parser');
@@ -22,19 +20,21 @@ app.oauth = oauthServer({
 });
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(expressWinston.logger({
   transports: [
     new winston.transports.Console({
       json: false,
       colorize: true
-    }),
+    })
   ],
   meta: false,
-  msg: "HTTP {{req.method}} {{req.url}}",
+  msg: 'HTTP {{req.method}} {{req.url}}',
   expressFormat: true,
   colorStatus: true,
-  ignoreRoute: function (req, res) { return false; }
+  ignoreRoute: function() {
+    return false;
+  }
 }));
 
 app.use(cookieParser());
@@ -43,7 +43,7 @@ app.use(session({
   resave: false,
   saveUninitialized: true
 }));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
 app.set('view engine', 'jade');
