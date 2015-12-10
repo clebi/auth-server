@@ -1,7 +1,7 @@
-var express = require('express'),
-    oauthServer = require('oauth2-server'),
-    models = require('../models'),
-    router = express.Router();
+var express = require('express');
+var oauthServer = require('oauth2-server');
+var models = require('../models');
+var router = new express.Router();
 
 var oauth = oauthServer({
   model: require('../services/oauthService'),
@@ -14,7 +14,7 @@ var oauth = oauthServer({
 router.all('/token', oauth.grant());
 
 // Show them the "do you authorise xyz app to access your content?" page
-router.get('/authorize', function (req, res, next) {
+router.get('/authorize', function(req, res, next) {
   if (!req.session.user) {
     // If they aren't logged in, send them to your own login implementation
     return res.redirect('/oauth/login?redirect=/oauth/authorize&client_id=' +
