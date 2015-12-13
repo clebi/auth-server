@@ -22,6 +22,7 @@ router.get('/authorize', function(req, res, next) {
   }
 
   res.render('authorize', {
+    title: 'Authorize',
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri
   });
@@ -45,6 +46,7 @@ router.post('/authorize', function (req, res, next) {
 // Show login
 router.get('/login', function (req, res, next) {
   res.render('login', {
+    title: 'Login',
     redirect: req.query.redirect,
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri
@@ -62,6 +64,7 @@ router.post('/login', function (req, res, next) {
     }).then(function(user) {
       if(!user) {
         return res.render('login', {
+          title: 'Login',
           redirect: req.body.redirect,
           client_id: req.body.client_id,
           redirect_uri: req.body.redirect_uri

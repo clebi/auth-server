@@ -1,16 +1,16 @@
-html
-  head
-    title="login"
-  body
+extend ./layout.jade
+
+block content
+  div(class="col-md-3 col-md-offset-4")
     h1="Login requested"
     form(method="POST", action="/oauth/login")
-      | username : 
-      input(type="text", name="username")
-      br
-      | password :
-      input(type="password", name="password")
-      br
-      input(type="submit", value="SUBMIT")
+      div(class="form-group")
+        label(for="username_input")="Username: "
+        input(id="username_input", type="text", name="username", placeholder="Username", class="form-control")
+      div(class="form-group")
+        label(for="password-input")="Password"
+        input(id="password-input", type="password", name="password", placeholder="Password", class="form-control")
+      input(type="submit", value="SUBMIT", class="btn btn-default")
       input(type="hidden", name="redirect", value=redirect)
       input(type="hidden", name="client_id", value=client_id)
       input(type="hidden", name="redirect_uri", value=redirect_uri)
