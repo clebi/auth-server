@@ -11,6 +11,12 @@ var app = express();
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
+app.use(function(req, res, next) {
+  console.log('req: ', req);
+  req.connection.remoteAddress = '82.242.44.65';
+  req.remoteAdress = '82.242.44.65';
+  next();
+});
 app.use(loggers.express);
 app.use(cookieParser());
 app.use(session({
