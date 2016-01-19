@@ -1,0 +1,9 @@
+var database = require('./config/config').get('database');
+
+var dbConfig =  {
+  'development': database
+};
+
+dbConfig.config = __filename;
+
+module.exports = dbConfig;
