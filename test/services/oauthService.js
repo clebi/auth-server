@@ -47,5 +47,11 @@ describe('OauthService', function() {
         done();
       });
     });
+
+    it('should return an error', function() {
+      oauthService.getAccessToken('bad_token', function(error) {
+        assert.ok(error);
+      });
+    });
   });
 });
