@@ -1,6 +1,7 @@
-var models = require('../models'),
-  sequelize = require('sequelize'),
-  model = module.exports;
+var models = require('../models');
+var sequelize = require('sequelize');
+
+var model = module.exports;
 
 model.getAccessToken = function(bearerToken, callback) {
   models.sequelize.transaction(function(t) {
