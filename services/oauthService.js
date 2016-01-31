@@ -1,5 +1,4 @@
 var models = require('../models');
-var sequelize = require('sequelize');
 
 var model = module.exports;
 
@@ -10,8 +9,9 @@ model.getAccessToken = function(bearerToken, callback) {
         access_token: bearerToken
       }
     }, {transaction: t}).then(function(token) {
-      if(!token)
-        return callback();
+      if (!token) {
+        throw new Error('token not found');
+      }
       return token.getUser({transaction: t}).then(function(user) {
         callback(false, {
           expires: token.expires,

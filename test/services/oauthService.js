@@ -13,6 +13,8 @@ describe('OauthService', function() {
     var accessToken = 'test_token';
     var now = new Date();
 
+    var error_token_not_found = new Error('token not found');
+
     before(function(done) {
       models.sequelize.sync({force: true}).then(function() {
         return models.sequelize.transaction();
@@ -48,9 +50,11 @@ describe('OauthService', function() {
       });
     });
 
-    it('should return an error', function() {
-      oauthService.getAccessToken('bad_token', function(error) {
+    it('should return an error (token not found)', function(done) {
+      oauthService.getAccessToken('missing_token', function(error, data)  {
         assert.ok(error);
+        assert.deepEqual(error_token_not_found, error);
+        done();
       });
     });
   });
