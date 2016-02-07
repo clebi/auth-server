@@ -111,5 +111,19 @@ describe('OauthService', function() {
         });
       });
     });
+
+    it('should throw an error for missing client', function(done) {
+      oauthService.saveAccessToken(test_token, 'missing_client_id', token_expires, {id: user_id}, function(error) {
+        assert.ok(error);
+        done();
+      });
+    });
+
+    it('should throw an error for missing user', function(done) {
+      oauthService.saveAccessToken(test_token, client_id, token_expires, {id: 12}, function(error) {
+        assert.ok(error);
+        done();
+      });
+    });
   });
 });
