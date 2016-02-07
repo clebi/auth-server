@@ -13,7 +13,7 @@ describe('OauthService', function() {
     var accessToken = 'test_token';
     var now = new Date();
 
-    var error_token_not_found = new Error('token not found');
+    var errorTokenNotFound = new Error('token not found');
 
     before(function(done) {
       models.sequelize.sync({force: true}).then(function() {
@@ -53,7 +53,7 @@ describe('OauthService', function() {
     it('should return an error (token not found)', function(done) {
       oauthService.getAccessToken('missing_token', function(error, data)  {
         assert.ok(error);
-        assert.deepEqual(error_token_not_found, error);
+        assert.deepEqual(errorTokenNotFound, error);
         done();
       });
     });
@@ -61,28 +61,28 @@ describe('OauthService', function() {
 
   describe('saveAccessToken', function() {
 
-    var client_id = 'test_client_id';
-    var client_secret = 'test_client_secret';
-    var client_uri = 'test_uri';
+    var clientId = 'test_client_id';
+    var clientSecret = 'test_clientSecret';
+    var redirectUri = 'test_uri';
 
-    var user_id = 42;
-    var username =  'test_username';
+    var userId = 42;
+    var username = 'test_username';
     var password = 'test_password';
 
-    var test_token = 'test_access_token';
-    var token_expires = new Date();
+    var testToken = 'test_access_token';
+    var tokenExpires = new Date();
 
     before(function(done) {
       models.sequelize.sync({force: true}).then(function() {
         return models.sequelize.transaction();
       }).then(function(t) {
         return models.OauthClient.create({
-          client_id: client_id,
-          client_secret: client_secret,
-          redirect_uri: client_uri
+          client_id: clientId,
+          client_secret: clientSecret,
+          redirect_uri: redirectUri
         }, {transaction: t}).then(function(client) {
           return models.User.create({
-            user_id: user_id,
+            user_id: userId,
             username: username,
             password: password
           });
@@ -96,31 +96,31 @@ describe('OauthService', function() {
     });
 
     it('should save a token', function(done) {
-      oauthService.saveAccessToken(test_token, client_id, token_expires, {id: user_id}, function(error) {
+      oauthService.saveAccessToken(testToken, clientId, tokenExpires, {id: userId}, function(error) {
         assert.ok(!error);
         models.sequelize.transaction(function(t) {
           return models.OauthAccessToken.findOne({
             where: {
-              access_token: test_token
+              access_token: testToken
             }
           }, {transaction: t});
         }).then(function(token) {
-          assert.equal(test_token, token.access_token);
-          assert.deepEqual(token_expires, token.expires);
+          assert.equal(testToken, token.access_token);
+          assert.deepEqual(tokenExpires, token.expires);
           done();
         });
       });
     });
 
     it('should throw an error for missing client', function(done) {
-      oauthService.saveAccessToken(test_token, 'missing_client_id', token_expires, {id: user_id}, function(error) {
+      oauthService.saveAccessToken(testToken, 'missing_client_id', tokenExpires, {id: userId}, function(error) {
         assert.ok(error);
         done();
       });
     });
 
     it('should throw an error for missing user', function(done) {
-      oauthService.saveAccessToken(test_token, client_id, token_expires, {id: 12}, function(error) {
+      oauthService.saveAccessToken(testToken, clientId, tokenExpires, {id: 12}, function(error) {
         assert.ok(error);
         done();
       });
