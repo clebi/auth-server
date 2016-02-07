@@ -1,11 +1,10 @@
 var assert = require('assert');
 var oauthService = require('../../services/oauthService');
 var models = require('../../models');
+var Promise = require('bluebird');
 
 describe('OauthService', function() {
-
   describe('getAccessToken', function() {
-
     var userId = 1;
     var username = 'test_username';
     var password = 'test_password';
@@ -19,23 +18,24 @@ describe('OauthService', function() {
       models.sequelize.sync({force: true}).then(function() {
         return models.sequelize.transaction();
       }).then(function(t) {
-        return models.User.create({
-          user_id: userId,
-          username: username,
-          password: password
-        }, {transaction: t}).then(function(user) {
-          return models.OauthAccessToken.create({
+        return Promise.join(
+          models.User.create({
+            user_id: userId,
+            username: username,
+            password: password
+          }, {transaction: t}),
+          models.OauthAccessToken.create({
             access_token: accessToken,
             expires: now
-          }, {transaction: t}).then(function(token) {
-            user.addOauthAccessToken(token, {transaction: t});
-          });
-        }).then(function() {
-          t.commit();
-          done();
-        }).catch(function() {
-          t.rollback();
-        });
+          }, {transaction: t})
+       ).spread(function(user, token) {
+         user.addOauthAccessToken(token, {transaction: t});
+       }).then(function() {
+         t.commit();
+         done();
+       }).catch(function() {
+         t.rollback();
+       });
       });
     });
 
@@ -51,7 +51,7 @@ describe('OauthService', function() {
     });
 
     it('should return an error (token not found)', function(done) {
-      oauthService.getAccessToken('missing_token', function(error, data)  {
+      oauthService.getAccessToken('missing_token', function(error) {
         assert.ok(error);
         assert.deepEqual(errorTokenNotFound, error);
         done();
@@ -60,7 +60,6 @@ describe('OauthService', function() {
   });
 
   describe('saveAccessToken', function() {
-
     var clientId = 'test_client_id';
     var clientSecret = 'test_clientSecret';
     var redirectUri = 'test_uri';
