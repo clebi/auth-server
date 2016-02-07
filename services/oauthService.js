@@ -32,7 +32,7 @@ model.saveAccessToken = function(accessToken, clientId, expires, user, callback)
       }
     }, {transaction: t}).then(function(client) {
       if (!client) {
-        return callback(new Error('unable to find client with id: ' + clientId));
+        throw new Error('unable to find client with id: ' + clientId);
       }
       return [client, models.User.findOne({
         where: {
@@ -41,7 +41,7 @@ model.saveAccessToken = function(accessToken, clientId, expires, user, callback)
       }, {transaction: t})];
     }).spread(function(client, dbUser) {
       if (!dbUser) {
-        return callback(new Error('unable to find user with id: ' + user.id));
+        throw new Error('unable to find user with id: ' + user.id);
       }
       return [client, dbUser, models.OauthAccessToken.create({
         access_token: accessToken,
