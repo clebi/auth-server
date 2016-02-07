@@ -31,21 +31,23 @@ model.saveAccessToken = function (accessToken, clientId, expires, user, callback
         client_id: clientId
       }
     }, {transaction: t}).then(function(client) {
-      if(!client)
-        return callback();
+      if (!client) {
+        return callback(new Error('unable to find client with id: ' + clientId));
+      }
       return models.User.findOne({
         where: {
           user_id: user.id
         }
-      }, {transaction: t}).then(function(user) {
-        if(!user)
-          return callback();
+      }, {transaction: t}).then(function(dbUser) {
+        if (!dbUser) {
+          return callback(new Error('unable to find user with id: ' + user.id));
+        }
         return models.OauthAccessToken.create({
           access_token: accessToken,
           expires: expires
         }, {transaction: t}).then(function(token) {
           return client.addOauthAccessToken(token, {transaction: t}).then(function(client) {
-            return user.addOauthAccessToken(token, {transaction: t}).then(function(user) {
+            return dbUser.addOauthAccessToken(token, {transaction: t}).then(function(user) {
               callback(false);
             });
           });
