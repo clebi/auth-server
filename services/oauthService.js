@@ -24,7 +24,7 @@ model.getAccessToken = function(bearerToken, callback) {
   });
 };
 
-model.saveAccessToken = function (accessToken, clientId, expires, user, callback) {
+model.saveAccessToken = function(accessToken, clientId, expires, user, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthClient.findOne({
       where: {
@@ -34,25 +34,25 @@ model.saveAccessToken = function (accessToken, clientId, expires, user, callback
       if (!client) {
         return callback(new Error('unable to find client with id: ' + clientId));
       }
-      return models.User.findOne({
+      return [client, models.User.findOne({
         where: {
           user_id: user.id
         }
-      }, {transaction: t}).then(function(dbUser) {
-        if (!dbUser) {
-          return callback(new Error('unable to find user with id: ' + user.id));
-        }
-        return models.OauthAccessToken.create({
-          access_token: accessToken,
-          expires: expires
-        }, {transaction: t}).then(function(token) {
-          return client.addOauthAccessToken(token, {transaction: t}).then(function(client) {
-            return dbUser.addOauthAccessToken(token, {transaction: t}).then(function(user) {
-              callback(false);
-            });
-          });
-        });
-      });
+      }, {transaction: t})];
+    }).spread(function(client, dbUser) {
+      if (!dbUser) {
+        return callback(new Error('unable to find user with id: ' + user.id));
+      }
+      return [client, dbUser, models.OauthAccessToken.create({
+        access_token: accessToken,
+        expires: expires
+      }, {transaction: t})];
+    }).spread(function(client, dbUser, token) {
+      return [client, dbUser, token];
+    }).spread(function(client, dbUser, token) {
+      return dbUser.addOauthAccessToken(token, {transaction: t});
+    }).then(function() {
+      callback();
     }).catch(function(error) {
       callback(error);
     });
