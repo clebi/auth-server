@@ -2,3 +2,7 @@ extends: google
 rules:
   max-len: [2, 120, 4]
   camelcase: [2, {"properties": "never"}]
+globals:
+  describe: true
+  before: true
+  it: true
