@@ -62,6 +62,7 @@ router.post('/login', function(req, res) {
         password: req.body.password
       }
     }, {trasaction: t}).then(function(user) {
+      t.commit();
       if (!user) {
         return res.render('login', {
           title: 'Login',
@@ -73,6 +74,10 @@ router.post('/login', function(req, res) {
       req.session.user = user;
       return res.redirect(req.body.redirect + '?client_id=' +
           req.body.client_id + '&redirect_uri=' + req.body.redirect_uri);
+    }).catch(function(error) {
+      t.rollback();
+      res.status(500).send('An error Happenned');
+      throw error;
     });
   });
 });
