@@ -1,3 +1,5 @@
+/* eslint max-nested-callbacks: [2, 5] */
+
 var assert = require('assert');
 var oauthService = require('../../services/oauthService');
 var models = require('../../models');
