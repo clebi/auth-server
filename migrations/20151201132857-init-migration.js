@@ -102,7 +102,7 @@ module.exports = {
     });
   },
 
-  down: function(queryInterface, Sequelize) {
+  down: function(queryInterface) {
     return queryInterface.dropTable('OauthAccessTokens').then(function() {
       return queryInterface.dropTable('OauthCodes');
     }).then(function() {

@@ -63,13 +63,15 @@ model.getClient = function(clientId, clientSecret, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthClient.findOne({
       where: {
-        client_id: clientId,
+        client_id: clientId
       }
     }, {transaction: t}).then(function(oauthClient) {
-      if(!oauthClient)
+      if (!oauthClient) {
         return callback();
-      if(clientSecret !== null && oauthClient.client_secret !== clientSecret)
+      }
+      if (clientSecret !== null && oauthClient.client_secret !== clientSecret) {
         return callback();
+      }
       callback(null, {
         clientId: oauthClient.client_id,
         clientSecret: oauthClient.client_secret,
@@ -81,7 +83,7 @@ model.getClient = function(clientId, clientSecret, callback) {
   });
 };
 
-model.grantTypeAllowed = function (clientId, grantType, callback) {
+model.grantTypeAllowed = function(clientId, grantType, callback) {
   callback(false, true);
 };
 
@@ -92,8 +94,9 @@ model.getAuthCode = function(authCode, callback) {
         code: authCode
       }
     }, {transaction: t}).then(function(code) {
-      if(!code)
+      if (!code) {
         return callback();
+      }
       return code.getOauthClient({transaction: t}).then(function(client) {
         return code.getUser({transaction: t}).then(function(user) {
           callback(false, {
@@ -113,24 +116,26 @@ model.saveAuthCode = function(authCode, clientId, expires, user, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthClient.findOne({
       where: {
-        client_id: clientId,
+        client_id: clientId
       }
     }, {transaction: t}).then(function(client) {
-      if(!client)
+      if (!client) {
         return callback();
+      }
       return models.User.findOne({
         where: {
           user_id: user
         }
       }, {transaction: t}).then(function(user) {
-        if(!user)
+        if (!user) {
           return callback();
+        }
         return models.OauthCode.create({
           code: authCode,
           expires: expires
         }, {transaction: t}).then(function(code) {
-          return client.addOauthCode(code, {transaction: t}).then(function(client) {
-            return user.addOauthCode(code, {transaction: t}).then(function(user) {
+          return client.addOauthCode(code, {transaction: t}).then(function() {
+            return user.addOauthCode(code, {transaction: t}).then(function() {
               callback();
             });
           });
