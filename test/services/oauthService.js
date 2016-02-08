@@ -79,7 +79,7 @@ describe('OauthService', function() {
           client_id: clientId,
           client_secret: clientSecret,
           redirect_uri: redirectUri
-        }, {transaction: t}).then(function(client) {
+        }, {transaction: t}).then(function() {
           return models.User.create({
             user_id: userId,
             username: username,
@@ -88,7 +88,7 @@ describe('OauthService', function() {
         }).then(function() {
           t.commit();
           done();
-        }).catch(function(error) {
+        }).catch(function() {
           t.rollback();
         });
       });
