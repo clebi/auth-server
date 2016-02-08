@@ -61,7 +61,7 @@ router.post('/login', function(req, res) {
         username: req.body.username,
         password: req.body.password
       }
-    }).then(function(user) {
+    }, {trasaction: t}).then(function(user) {
       if (!user) {
         return res.render('login', {
           title: 'Login',
