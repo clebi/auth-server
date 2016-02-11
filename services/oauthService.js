@@ -67,10 +67,10 @@ model.getClient = function(clientId, clientSecret, callback) {
       }
     }, {transaction: t}).then(function(oauthClient) {
       if (!oauthClient) {
-        return callback();
+        throw new Error('client not found');
       }
       if (clientSecret !== null && oauthClient.client_secret !== clientSecret) {
-        return callback();
+        throw new Error('secrets doesn\'t match');
       }
       callback(null, {
         clientId: oauthClient.client_id,
