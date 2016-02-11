@@ -1,4 +1,5 @@
 var models = require('../models');
+var Promise = require('bluebird');
 
 var model = module.exports;
 
@@ -12,12 +13,12 @@ model.getAccessToken = function(bearerToken, callback) {
       if (!token) {
         throw new Error('token not found');
       }
-      return token.getUser({transaction: t}).then(function(user) {
-        callback(false, {
-          expires: token.expires,
-          user: user
-        });
-      });
+      return Promise.join(token, token.getUser({transaction: t}));
+    });
+  }).spread(function(token, user) {
+    callback(false, {
+      expires: token.expires,
+      user: user
     });
   }).catch(function(error) {
     callback(error);
@@ -51,11 +52,11 @@ model.saveAccessToken = function(accessToken, clientId, expires, user, callback)
       return [client, dbUser, token];
     }).spread(function(client, dbUser, token) {
       return dbUser.addOauthAccessToken(token, {transaction: t});
-    }).then(function() {
-      callback();
-    }).catch(function(error) {
-      callback(error);
     });
+  }).then(function() {
+    callback();
+  }).catch(function(error) {
+    callback(error);
   });
 };
 
@@ -67,19 +68,21 @@ model.getClient = function(clientId, clientSecret, callback) {
       }
     }, {transaction: t}).then(function(oauthClient) {
       if (!oauthClient) {
-        throw new Error('client not found');
+        throw new Error('client not found with id: ' + clientId);
       }
       if (clientSecret !== null && oauthClient.client_secret !== clientSecret) {
         throw new Error('secrets doesn\'t match');
       }
-      callback(null, {
-        clientId: oauthClient.client_id,
-        clientSecret: oauthClient.client_secret,
-        redirectUri: oauthClient.redirect_uri
-      });
-    }).catch(function(error) {
-      callback(error);
+      return oauthClient;
     });
+  }).then(function(oauthClient) {
+    callback(null, {
+      clientId: oauthClient.client_id,
+      clientSecret: oauthClient.client_secret,
+      redirectUri: oauthClient.redirect_uri
+    });
+  }).catch(function(error) {
+    callback(error);
   });
 };
 
