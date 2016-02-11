@@ -98,7 +98,7 @@ model.getAuthCode = function(authCode, callback) {
       }
     }, {transaction: t}).then(function(code) {
       if (!code) {
-        return callback();
+        throw new Error('missing auth code with id: ' + authCode);
       }
       return code.getOauthClient({transaction: t}).then(function(client) {
         return code.getUser({transaction: t}).then(function(user) {
