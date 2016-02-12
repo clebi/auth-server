@@ -3,6 +3,23 @@ var Promise = require('bluebird');
 
 var model = module.exports;
 
+/**
+ * callback for get access token
+ * @callback getAccessTokenCallback
+ * @param {boolean|Error} error error if there was one, false if not
+ * @param {?object}  token access token information
+ * @param {Date} token.expires expiration date of the token
+ * @param {object} token.user user associated with the token
+ * @param {number} token.user.user_id id of the user associated with the token
+ * @param {string} token.user.username username of the user
+ * @param {string} token.user.password password of the user
+ */
+
+/**
+ * retrieve an access token
+ * @param {string} bearerToken token to retrieve
+ * @param {getAccessTokenCallback} callback function to call ater retrieve
+ */
 model.getAccessToken = function(bearerToken, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthAccessToken.findOne({
@@ -25,6 +42,21 @@ model.getAccessToken = function(bearerToken, callback) {
   });
 };
 
+/**
+ * callback for save access token
+ * @callback saveAccessTokenCallback
+ * @param {boolean|Error} error error if there was one, false if not
+ */
+
+/**
+ * save an access token
+ * @param {string} accessToken access token to save
+ * @param {string} clientId client id to associate with access token
+ * @param {Date} expires expiration of the access token
+ * @param {object} user user associated with the access token
+ * @param {number} user.id id of the user
+ * @param {saveAccessTokenCallback} callback callback function to call after save
+ */
 model.saveAccessToken = function(accessToken, clientId, expires, user, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthClient.findOne({
@@ -54,12 +86,27 @@ model.saveAccessToken = function(accessToken, clientId, expires, user, callback)
       return dbUser.addOauthAccessToken(token, {transaction: t});
     });
   }).then(function() {
-    callback();
+    callback(false);
   }).catch(function(error) {
     callback(error);
   });
 };
 
+/**
+ * callback for get client
+ * @callback getClientCallback
+ * @param {boolean|Error} error error if there was one, false if not
+ * @param {?object} client contains all the informations about
+ * @param {string} client.clientId id of the client
+ * @param {string} client.secret secret of the client
+ */
+
+/**
+ * retrieve a a client
+ * @param {string} clientId id op the client to retrieve
+ * @param {string} clientSecret of the client, use to grant access
+ * @param {getClientCallback} callback function called after client is retrieved
+ */
 model.getClient = function(clientId, clientSecret, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthClient.findOne({
@@ -76,7 +123,7 @@ model.getClient = function(clientId, clientSecret, callback) {
       return oauthClient;
     });
   }).then(function(oauthClient) {
-    callback(null, {
+    callback(false, {
       clientId: oauthClient.client_id,
       clientSecret: oauthClient.client_secret,
       redirectUri: oauthClient.redirect_uri
@@ -86,10 +133,38 @@ model.getClient = function(clientId, clientSecret, callback) {
   });
 };
 
+/**
+ * callback for grant type allowed
+ * @callback grantTypeAllowedCallback
+ * @param {boolean|Error} error error if there was one, false if not
+ * @param {boolean} allowed true if the grant type is allowed, false if not
+ */
+
+/**
+ * get the allowed grant type
+ * @param {string} clientId id of the client
+ * @param {string} grantType grant type to check
+ * @param {grantTypeAllowedCallback} callback function called when grant type checking is done
+ */
 model.grantTypeAllowed = function(clientId, grantType, callback) {
   callback(false, true);
 };
 
+/**
+ * callback for get authorization code
+ * @callback getAuthCodeCallback
+ * @param {boolean|Error} Error if there was one, false if not
+ * @param {?object} authCode authorization code infromation
+ * @param {string} authCode.clientId id of the client associated to the authorization code
+ * @param {Date} authCode.expires expiration date of the authorization code
+ * @param {number} authCode.userId id of the user associated with the authorization code
+ */
+
+/**
+ * retrieve an authorization code
+ * @param {string} code authorization code to retrieve
+ * @param {getAuthCodeCallback} callback function called when authorization code is retrieved
+ */
 model.getAuthCode = function(code, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthCode.findOne({
@@ -117,6 +192,20 @@ model.getAuthCode = function(code, callback) {
   });
 };
 
+/**
+ * callback for save authorization code
+ * @callback saveAuthCodeCallback
+ * @param {boolean|Error} error error if there was one, false if not
+ */
+
+/**
+ * save an authorization code
+ * @param {string} authCode authorization code to save
+ * @param {string} clientId id of the client associated with the authorization code
+ * @param {Date} expires expiration date of the authorization code
+ * @param {number} userId id of the user associated with the authorization code
+ * @param {saveAuthCodeCallback} callback function called when authorization code is saved
+ */
 model.saveAuthCode = function(authCode, clientId, expires, userId, callback) {
   models.sequelize.transaction(function(t) {
     return Promise.join(
