@@ -1,6 +1,6 @@
 /* eslint max-nested-callbacks: [2, 6] */
 
-var assert = require('assert');
+var expect = require('expect.js');
 var oauthService = require('../../../services/oauthService');
 var models = require('../../../models');
 var Promise = require('bluebird');
@@ -49,17 +49,17 @@ describe('OauthServiceAuthcode', function() {
 
     it('should return an auth code', function(done) {
       oauthService.getAuthCode(authCode, function(error, authCode) {
-        assert.ifError(error);
-        assert.equal(clientId, authCode.clientId);
-        assert.deepEqual(authCodeExpires, authCode.expires);
-        assert.equal(userId, authCode.userId);
+        expect(error).not.to.be.a(Error);
+        expect(authCode.clientId).to.be(clientId);
+        expect(authCode.expires).to.eql(authCodeExpires);
+        expect(authCode.userId).to.be(userId);
         done();
       });
     });
 
     it('should throw an error for missing oauth code', function(done) {
       oauthService.getAuthCode('missing_auth_code', function(error) {
-        assert.deepEqual(errorAuthCodeNotFound, error);
+        expect(error).to.eql(errorAuthCodeNotFound);
         done();
       });
     });
@@ -100,7 +100,7 @@ describe('OauthServiceAuthcode', function() {
 
     it('should save an auth code', function(done) {
       oauthService.saveAuthCode(authCode, clientId, authCodeExpires, userId, function(error) {
-        assert.ifError(error);
+        expect(error).not.to.be.a(Error);
         done();
       });
     });
@@ -108,7 +108,7 @@ describe('OauthServiceAuthcode', function() {
     it('should throw an error for missing oauth client', function(done) {
       var clientIdNotFound = 'missing_client_id';
       oauthService.saveAuthCode(authCode, clientIdNotFound, authCodeExpires, userId, function(error) {
-        assert.deepEqual(new Error('client not found with id: ' + clientIdNotFound), error);
+        expect(error).to.eql(new Error('client not found with id: ' + clientIdNotFound));
         done();
       });
     });
@@ -116,7 +116,7 @@ describe('OauthServiceAuthcode', function() {
     it('should throw an error for missing user', function(done) {
       var userIdNotFound = 66;
       oauthService.saveAuthCode(authCode, clientId, authCodeExpires, userIdNotFound, function(error) {
-        assert.deepEqual(new Error('user not found with id: ' + userIdNotFound), error);
+        expect(error).to.eql(new Error('user not found with id: ' + userIdNotFound));
         done();
       });
     });
