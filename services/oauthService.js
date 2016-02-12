@@ -117,35 +117,37 @@ model.getAuthCode = function(authCode, callback) {
 
 model.saveAuthCode = function(authCode, clientId, expires, userId, callback) {
   models.sequelize.transaction(function(t) {
-    return models.OauthClient.findOne({
-      where: {
-        client_id: clientId
-      }
-    }, {transaction: t}).then(function(client) {
-      if (!client) {
-        throw new Error('client not found with id: ' + clientId);
-      }
-      return models.User.findOne({
+    return Promise.join(
+      models.OauthClient.findOne({
+        where: {
+          client_id: clientId
+        }
+      }, {transaction: t}),
+      models.User.findOne({
         where: {
           user_id: userId
         }
-      }, {transaction: t}).then(function(user) {
-        if (!user) {
-          throw new Error('user not found with id: ' + userId);
-        }
-        return models.OauthCode.create({
-          code: authCode,
-          expires: expires
-        }, {transaction: t}).then(function(code) {
-          return client.addOauthCode(code, {transaction: t}).then(function() {
-            return user.addOauthCode(code, {transaction: t}).then(function() {
-              callback();
-            });
-          });
-        });
-      });
-    }).catch(function(error) {
-      callback(error);
+      }, {transaction: t})
+    ).spread(function(client, user) {
+      if (!client) {
+        throw new Error('client not found with id: ' + clientId);
+      }
+      if (!user) {
+        throw new Error('user not found with id: ' + userId);
+      }
+      return Promise.join(client, user, models.OauthCode.create({
+        code: authCode,
+        expires: expires
+      }, {transaction: t}));
+    }).spread(function(client, user, authCode) {
+      return Promise.join(
+        authCode.setOauthClient(client, {transaction: t}),
+        authCode.setUser(user, {transaction: t})
+      );
     });
+  }).then(function() {
+    callback(false);
+  }).catch(function(error) {
+    callback(error);
   });
 };
