@@ -109,7 +109,7 @@ describe('OauthServiceAuthcode', function() {
           }, {transaction: t});
         }).then(function(authCode) {
           expect(authCode.code).to.be(testAuthCode);
-          expect(authCode.expires).to.be(testAuthCodeExpires);
+          expect(authCode.expires).to.eql(testAuthCodeExpires);
           return Promise.join(
             authCode.getOauthClient(),
             authCode.getUser()
