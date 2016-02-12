@@ -90,28 +90,30 @@ model.grantTypeAllowed = function(clientId, grantType, callback) {
   callback(false, true);
 };
 
-model.getAuthCode = function(authCode, callback) {
+model.getAuthCode = function(code, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthCode.findOne({
       where: {
-        code: authCode
+        code: code
       }
-    }, {transaction: t}).then(function(code) {
-      if (!code) {
-        throw new Error('missing auth code with id: ' + authCode);
+    }, {transaction: t}).then(function(authCode) {
+      if (!authCode) {
+        throw new Error('missing auth code with id: ' + code);
       }
-      return code.getOauthClient({transaction: t}).then(function(client) {
-        return code.getUser({transaction: t}).then(function(user) {
-          callback(false, {
-            clientId: client.client_id,
-            expires: code.expires,
-            userId: user.user_id
-          });
-        });
-      });
-    }).catch(function(error) {
-      callback(error);
+      return Promise.join(
+        authCode,
+        authCode.getOauthClient({transaction: t}),
+        authCode.getUser({transaction: t})
+      );
     });
+  }).spread(function(authCode, oauthClient, user) {
+    callback(false, {
+      clientId: oauthClient.client_id,
+      expires: authCode.expires,
+      userId: user.user_id
+    });
+  }).catch(function(error) {
+    callback(error);
   });
 };
 
