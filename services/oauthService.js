@@ -115,7 +115,7 @@ model.getAuthCode = function(authCode, callback) {
   });
 };
 
-model.saveAuthCode = function(authCode, clientId, expires, user, callback) {
+model.saveAuthCode = function(authCode, clientId, expires, userId, callback) {
   models.sequelize.transaction(function(t) {
     return models.OauthClient.findOne({
       where: {
@@ -123,15 +123,15 @@ model.saveAuthCode = function(authCode, clientId, expires, user, callback) {
       }
     }, {transaction: t}).then(function(client) {
       if (!client) {
-        return callback();
+        throw new Error('client not found with id: ' + clientId);
       }
       return models.User.findOne({
         where: {
-          user_id: user
+          user_id: userId
         }
       }, {transaction: t}).then(function(user) {
         if (!user) {
-          return callback();
+          throw new Error('user not found with id: ' + userId);
         }
         return models.OauthCode.create({
           code: authCode,

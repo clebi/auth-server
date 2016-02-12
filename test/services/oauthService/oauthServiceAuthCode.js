@@ -6,7 +6,7 @@ var models = require('../../../models');
 var Promise = require('bluebird');
 
 describe('OauthServiceAuthcode', function() {
-  describe('AuthCode', function() {
+  describe('getAuthCode', function() {
     var clientId = 'test_auth_code_client_id';
     var clientSecret = 'test_auth_code_client_secret';
     var redirectUri = 'test_auth_code_redirect_uri';
@@ -60,6 +60,63 @@ describe('OauthServiceAuthcode', function() {
     it('should throw an error for missing oauth code', function(done) {
       oauthService.getAuthCode('missing_auth_code', function(error) {
         assert.deepEqual(errorAuthCodeNotFound, error);
+        done();
+      });
+    });
+  });
+
+  describe('saveAuthCode', function() {
+    var clientId = 'test_save_auth_code_client_id';
+    var clientSecret = 'test_save_auth_code_client_secret';
+    var redirectUri = 'test_save_auth_code_redirect_uri';
+
+    var userId = 36;
+    var username = 'test_save_auth_code_username';
+    var password = 'test_save_auth_code_password';
+
+    var authCode = 'test_auth_code';
+    var authCodeExpires = new Date();
+
+    before(function(done) {
+      models.sequelize.sync({force: true}).then(function() {
+        models.sequelize.transaction(function(t) {
+          return Promise.join(
+            models.OauthClient.create({
+              client_id: clientId,
+              client_secret: clientSecret,
+              redirect_uri: redirectUri
+            }, {transaction: t}),
+            models.User.create({
+              user_id: userId,
+              username: username,
+              password: password
+            }, {transaction: t})
+          );
+        }).then(function() {
+          done();
+        });
+      });
+    });
+
+    it('should save an auth code', function(done) {
+      oauthService.saveAuthCode(authCode, clientId, authCodeExpires, userId, function(error) {
+        assert.ifError(error);
+        done();
+      });
+    });
+
+    it('should throw an error for missing oauth client', function(done) {
+      var clientIdNotFound = 'missing_client_id';
+      oauthService.saveAuthCode(authCode, clientIdNotFound, authCodeExpires, userId, function(error) {
+        assert.deepEqual(new Error('client not found with id: ' + clientIdNotFound), error);
+        done();
+      });
+    });
+
+    it('should throw an error for missing user', function(done) {
+      var userIdNotFound = 66;
+      oauthService.saveAuthCode(authCode, clientId, authCodeExpires, userIdNotFound, function(error) {
+        assert.deepEqual(new Error('user not found with id: ' + userIdNotFound), error);
         done();
       });
     });
