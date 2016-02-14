@@ -53,14 +53,18 @@ module.exports = {
           references: {
             model: 'Users',
             key: 'user_id'
-          }
+          },
+          onUpdate: 'RESTRICT',
+          onDelete: 'CASCADE'
         },
         fk_client_id: {
           type: Sequelize.STRING,
           references: {
             model: 'OauthClients',
             key: 'client_id'
-          }
+          },
+          onUpdate: 'RESTRICT',
+          onDelete: 'CASCADE'
         },
         createdAt: {
           type: Sequelize.DATE
@@ -83,14 +87,18 @@ module.exports = {
           references: {
             model: 'Users',
             key: 'user_id'
-          }
+          },
+          onUpdate: 'RESTRICT',
+          onDelete: 'CASCADE'
         },
         fk_client_id: {
           type: Sequelize.STRING,
           references: {
             model: 'OauthClients',
             key: 'client_id'
-          }
+          },
+          onUpdate: 'RESTRICT',
+          onDelete: 'CASCADE'
         },
         createdAt: {
           type: Sequelize.DATE
