@@ -68,7 +68,6 @@ router.post('/login', function(req, res, next) {
         redirect_uri: req.body.redirect_uri
       });
     }
-    res.status(500).send('An error Happenned');
     next(error);
   });
 });
