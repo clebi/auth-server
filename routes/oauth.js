@@ -54,7 +54,7 @@ router.get('/login', function(req, res) {
 });
 
 // Handle login
-router.post('/login', function(req, res) {
+router.post('/login', function(req, res, next) {
   userService.getUser(req.body.username, req.body.password).then(function(user) {
     req.session.user = user;
     return res.redirect(req.body.redirect + '?client_id=' +
@@ -69,7 +69,7 @@ router.post('/login', function(req, res) {
       });
     }
     res.status(500).send('An error Happenned');
-    throw error;
+    next(error);
   });
 });
 
