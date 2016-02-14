@@ -1,8 +1,7 @@
 var express = require('express');
 var oauthServer = require('oauth2-server');
-var models = require('../models');
+var userService = require('../services/userService');
 var router = new express.Router();
-var bcrypt = require('bcrypt');
 
 var oauth = oauthServer({
   model: require('../services/oauthService'),
@@ -56,14 +55,12 @@ router.get('/login', function(req, res) {
 
 // Handle login
 router.post('/login', function(req, res) {
-  models.sequelize.transaction(function(t) {
-    return models.User.findOne({
-      where: {
-        username: req.body.username
-      }
-    }, {trasaction: t});
-  }).then(function(user) {
-    if (!user && bcrypt.compareSync(req.body.password, user.password)) {
+  userService.getUser(req.body.username, req.body.password).then(function(user) {
+    req.session.user = user;
+    return res.redirect(req.body.redirect + '?client_id=' +
+        req.body.client_id + '&redirect_uri=' + req.body.redirect_uri);
+  }).catch(function(error) {
+    if (error instanceof userService.UserNotFound) {
       return res.render('login', {
         title: 'Login',
         redirect: req.body.redirect,
@@ -71,10 +68,6 @@ router.post('/login', function(req, res) {
         redirect_uri: req.body.redirect_uri
       });
     }
-    req.session.user = user;
-    return res.redirect(req.body.redirect + '?client_id=' +
-        req.body.client_id + '&redirect_uri=' + req.body.redirect_uri);
-  }).catch(function(error) {
     res.status(500).send('An error Happenned');
     throw error;
   });
