@@ -1,12 +1,14 @@
 'use strict';
 
+var bcrypt = require('bcrypt');
+
 module.exports = {
-  up: function (queryInterface, Sequelize) {
+  up: function(queryInterface) {
     var now = new Date();
     return queryInterface.bulkInsert('Users', [{
       user_id: 1,
       username: 'expuser',
-      password: 'expuser',
+      password: bcrypt.hashSync('expuser', 10),
       createdAt: now,
       updatedAt: now
     }], {}).then(function() {
@@ -20,7 +22,7 @@ module.exports = {
     });
   },
 
-  down: function (queryInterface, Sequelize) {
+  down: function(queryInterface) {
     return queryInterface.bulkDelete('Users', [{
       user_id: 1
     }], {}).then(function() {

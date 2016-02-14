@@ -22,7 +22,8 @@
     "sequelize": "~3.14.1",
     "sequelize-cli": "~2.1.1",
     "serve-favicon": "~2.3.0",
-    "bluebird": "~3.2.2"
+    "bluebird": "~3.2.2",
+    "bcrypt": "~0.8.5"
   },
   "devDependencies": {
     "eslint": "~1.10.3",

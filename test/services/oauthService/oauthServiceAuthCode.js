@@ -34,7 +34,7 @@ describe('OauthServiceAuthcode', function() {
             User: {
               user_id: userId,
               username: username,
-              password: password
+              password_raw: password
             }
           }, {
             include: [models.OauthClient, models.User],
@@ -89,7 +89,7 @@ describe('OauthServiceAuthcode', function() {
             models.User.create({
               user_id: userId,
               username: username,
-              password: password
+              password_raw: password
             }, {transaction: t})
           );
         }).then(function() {

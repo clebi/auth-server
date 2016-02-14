@@ -1,9 +1,11 @@
 /* eslint max-nested-callbacks: [2, 6] */
 
 var assert = require('assert');
+var expect = require('expect.js');
 var oauthService = require('../../../services/oauthService');
 var models = require('../../../models');
 var Promise = require('bluebird');
+var bcrypt = require('bcrypt');
 
 describe('OauthServiceAccessToken', function() {
   describe('getAccessToken', function() {
@@ -23,7 +25,7 @@ describe('OauthServiceAccessToken', function() {
             models.User.create({
               user_id: userId,
               username: username,
-              password: password
+              password_raw: password
             }, {transaction: t}),
             models.OauthAccessToken.create({
               access_token: accessToken,
@@ -45,7 +47,7 @@ describe('OauthServiceAccessToken', function() {
         assert.deepEqual(now, data.expires);
         assert.equal(userId, data.user.user_id);
         assert.equal(username, data.user.username);
-        assert.equal(password, data.user.password);
+        expect(bcrypt.compareSync(password, data.user.password)).to.be.ok();
         done();
       });
     });
@@ -84,7 +86,7 @@ describe('OauthServiceAccessToken', function() {
             return models.User.create({
               user_id: userId,
               username: username,
-              password: password
+              password_raw: password
             });
           });
         }).then(function() {
