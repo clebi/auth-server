@@ -1,7 +1,10 @@
 extends: google
+env:
+  node: true
 rules:
   max-len: [2, 120, 4]
   camelcase: [2, {"properties": "never"}]
+  complexity: [2, 5]
 globals:
   describe: true
   before: true
