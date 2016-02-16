@@ -14,21 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-'use strict';
-
 module.exports = function(sequelize, DataTypes) {
-  var OauthClient = sequelize.define('OauthClient', {
-    client_id: {type: DataTypes.STRING, primaryKey: true},
-    client_secret: DataTypes.STRING,
-    redirect_uri: DataTypes.STRING
+  var ClientGrantType = sequelize.define('ClientGrantType', {
+    grant_type: DataTypes.STRING
   }, {
     classMethods: {
       associate: function(models) {
-        OauthClient.hasMany(models.OauthCode, {foreignKey: 'fk_client_id'});
-        OauthClient.hasMany(models.OauthAccessToken, {foreignKey: 'fk_client_id'});
-        OauthClient.hasMany(models.ClientGrantType, {foreignKey: 'fk_client_id'});
+        ClientGrantType.belongsTo(models.OauthClient, {foreignKey: 'fk_client_id'});
       }
-    }
+    },
+    table_name: 'ClientGrantTypes'
   });
-  return OauthClient;
+  return ClientGrantType;
 };

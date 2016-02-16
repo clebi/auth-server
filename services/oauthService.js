@@ -163,7 +163,26 @@ model.getClient = function(clientId, clientSecret, callback) {
  * @param {grantTypeAllowedCallback} callback function called when grant type checking is done
  */
 model.grantTypeAllowed = function(clientId, grantType, callback) {
-  callback(false, true);
+  models.sequelize.transaction(function(t) {
+    return models.OauthClient.findOne({
+      where: {
+        client_id: clientId
+      },
+      include: [
+        {model: models.ClientGrantType, where: {grant_type: grantType}, required: false}
+      ]
+    }, {transaction: t});
+  }).then(function(client) {
+    if (!client) {
+      return callback(false, false);
+    }
+    if (client.ClientGrantTypes.length < 1) {
+      return callback(false, false);
+    }
+    callback(false, true);
+  }).catch(function(error) {
+    callback(error);
+  });
 };
 
 /**
