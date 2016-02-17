@@ -17,6 +17,7 @@ limitations under the License.
 var express = require('express');
 var oauthServer = require('oauth2-server');
 var userService = require('../services/userService');
+var controller = require('../controllers/oauth');
 var router = new express.Router();
 
 var oauth = oauthServer({
@@ -70,23 +71,7 @@ router.get('/login', function(req, res) {
 });
 
 // Handle login
-router.post('/login', function(req, res, next) {
-  userService.getUser(req.body.username, req.body.password).then(function(user) {
-    req.session.user = user;
-    return res.redirect(req.body.redirect + '?client_id=' +
-        req.body.client_id + '&redirect_uri=' + req.body.redirect_uri);
-  }).catch(function(error) {
-    if (error instanceof userService.UserNotFound) {
-      return res.render('login', {
-        title: 'Login',
-        redirect: req.body.redirect,
-        client_id: req.body.client_id,
-        redirect_uri: req.body.redirect_uri
-      });
-    }
-    next(error);
-  });
-});
+router.post('/login', controller.loginPost);
 
 router.use(oauth.errorHandler());
 
