@@ -18,11 +18,11 @@ var sinon = require('sinon');
 var userService = require('../../services/userService');
 var controller = require('../../controllers/oauth');
 var expect = require('expect.js');
+var Promise = require('bluebird');
 
 describe('oauthRoutes', function() {
   var sandbox;
   var stubGetUser;
-  var spyRedirect;
   var redirect = 'test_login_post';
   var clientId = 'test_login_post';
   var user = {
@@ -35,7 +35,10 @@ describe('oauthRoutes', function() {
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
     stubGetUser = sandbox.stub(userService, 'getUser');
-    spyRedirect = sandbox.spy();
+  });
+
+  afterEach(function() {
+    sandbox.restore();
   });
 
   describe('login post', function() {
@@ -51,6 +54,7 @@ describe('oauthRoutes', function() {
     };
 
     it('redirects to param url', function(done) {
+      var spyRedirect = sandbox.spy();
       stubGetUser.returns(Promise.resolve(user));
       controller.loginPost(req, {redirect: spyRedirect}).then(function() {
         try {
@@ -61,6 +65,40 @@ describe('oauthRoutes', function() {
           done();
         } catch (error) {
           done(error);
+        }
+      });
+    });
+
+    it('should render login', function(done) {
+      var spyRender = sandbox.spy();
+      stubGetUser.returns(Promise.reject(new userService.UserNotFound('missing_user')));
+      controller.loginPost(req, {render: spyRender}).then(function() {
+        try {
+          expect(stubGetUser.calledWith(user.username, user.password)).to.be.ok();
+          expect(spyRender.calledWith('login', {
+            title: 'Login',
+            redirect: req.body.redirect,
+            client_id: req.body.client_id,
+            redirect_uri: req.body.redirect_uri
+          })).to.be.ok();
+          done();
+        } catch (err) {
+          done(err);
+        }
+      });
+    });
+
+    it('should called next with an error', function(done) {
+      var error = new Error('generic_error');
+      var spyNext = sandbox.spy();
+      stubGetUser.returns(Promise.reject(error));
+      controller.loginPost(req, {}, spyNext).then(function() {
+        try {
+          expect(stubGetUser.calledWith(user.username, user.password)).to.be.ok();
+          expect(spyNext.calledWith(error)).to.be.ok();
+          done();
+        } catch (err) {
+          done(err);
         }
       });
     });

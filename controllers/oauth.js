@@ -23,12 +23,13 @@ module.exports.loginPost = function(req, res, next) {
         req.body.client_id + '&redirect_uri=' + req.body.redirect_uri);
   }).catch(function(error) {
     if (error instanceof userService.UserNotFound) {
-      return res.render('login', {
+      res.render('login', {
         title: 'Login',
         redirect: req.body.redirect,
         client_id: req.body.client_id,
         redirect_uri: req.body.redirect_uri
       });
+      return;
     }
     next(error);
   });

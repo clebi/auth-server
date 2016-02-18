@@ -18,6 +18,7 @@ limitations under the License.
 
 var models = require('../models');
 var bcrypt = require('bcrypt');
+var util = require('util');
 
 /**
  * User not found error with username
@@ -28,7 +29,7 @@ function UserNotFound(username) {
   Error.call(this);
   this.message = 'unable to find user with username: ' + username;
 }
-UserNotFound.prototype = Error.prototype;
+util.inherits(UserNotFound, Error);
 module.exports.UserNotFound = UserNotFound;
 
 module.exports.getUser = function(username, password) {
