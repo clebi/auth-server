@@ -60,14 +60,7 @@ router.post('/authorize', function(req, res, next) {
 }));
 
 // Show login
-router.get('/login', function(req, res) {
-  res.render('login', {
-    title: 'Login',
-    redirect: req.query.redirect,
-    client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri
-  });
-});
+router.get('/login', controller.loginGet);
 
 // Handle login
 router.post('/login', controller.loginPost);

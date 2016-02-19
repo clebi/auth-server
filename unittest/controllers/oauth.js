@@ -103,4 +103,25 @@ describe('oauthRoutes', function() {
       });
     });
   });
+
+  describe('loginGet', function() {
+    var req = {
+      query: {
+        redirect: redirect,
+        client_id: clientId,
+        redirect_uri: redirectUri
+      }
+    };
+
+    it('should render login', function() {
+      var spyRender = sandbox.spy();
+      controller.loginGet(req, {render: spyRender});
+      expect(spyRender.calledWith('login', {
+        title: 'Login',
+        redirect: req.query.redirect,
+        client_id: req.query.client_id,
+        redirect_uri: req.query.redirect_uri
+      })).to.be.ok();
+    });
+  });
 });

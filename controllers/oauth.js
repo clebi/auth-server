@@ -16,6 +16,20 @@ limitations under the License.
 
 var userService = require('../services/userService');
 
+/**
+ * controller for login page, render the login page
+ * @param {object} req request
+ * @param {object} res response
+ */
+module.exports.loginGet = function(req, res) {
+  res.render('login', {
+    title: 'Login',
+    redirect: req.query.redirect,
+    client_id: req.query.client_id,
+    redirect_uri: req.query.redirect_uri
+  });
+};
+
 module.exports.loginPost = function(req, res, next) {
   return userService.getUser(req.body.username, req.body.password).then(function(user) {
     req.session.user = user;
