@@ -17,6 +17,26 @@ limitations under the License.
 var userService = require('../services/userService');
 
 /**
+ * controller for authorize get, redirect to login if no user, render authorize page if user data is there
+ * @param {object} req request
+ * @param {object} res response
+ */
+module.exports.authorizeGet = function(req, res) {
+  if (!req.session.user) {
+    // If they aren't logged in, send them to your own login implementation
+    res.redirect('/oauth/login?redirect=/oauth/authorize&client_id=' +
+        req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
+    return;
+  }
+
+  res.render('authorize', {
+    title: 'Authorize',
+    client_id: req.query.client_id,
+    redirect_uri: req.query.redirect_uri
+  });
+};
+
+/**
  * controller for login page, render the login page
  * @param {object} req request
  * @param {object} res response

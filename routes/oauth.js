@@ -30,19 +30,7 @@ var oauth = oauthServer({
 router.all('/token', oauth.grant());
 
 // Show them the "do you authorise xyz app to access your content?" page
-router.get('/authorize', function(req, res) {
-  if (!req.session.user) {
-    // If they aren't logged in, send them to your own login implementation
-    return res.redirect('/oauth/login?redirect=/oauth/authorize&client_id=' +
-        req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
-  }
-
-  res.render('authorize', {
-    title: 'Authorize',
-    client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri
-  });
-});
+router.get('/authorize', controller.authorizeGet);
 
 // Handle authorise
 router.post('/authorize', function(req, res, next) {
