@@ -16,7 +16,6 @@ limitations under the License.
 
 var express = require('express');
 var oauthServer = require('oauth2-server');
-var userService = require('../services/userService');
 var controller = require('../controllers/oauth');
 var router = new express.Router();
 
