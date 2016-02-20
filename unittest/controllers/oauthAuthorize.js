@@ -20,6 +20,17 @@ var expect = require('expect.js');
 
 describe('controllers', function() {
   var sandbox;
+  var clientId = 'test_client_id';
+  var redirectUri = 'test_redirect_uri';
+  var query = {
+    client_id: clientId,
+    redirect_uri: redirectUri
+  };
+  var user = {
+    user_id: 42,
+    username: 'test_login_post',
+    password: 'test_login_post'
+  };
 
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
@@ -29,14 +40,34 @@ describe('controllers', function() {
     sandbox.restore();
   });
 
-  describe('authorize get', function() {
-    var clientId = 'test_client_id';
-    var redirectUri = 'test_redirect_uri';
-    var query = {
-      client_id: clientId,
-      redirect_uri: redirectUri
-    };
+  describe('authorize post', function() {
+    it('should redirect to login', function() {
+      var req = {
+        session: {},
+        query: query
+      };
+      var spyRedirect = sandbox.spy();
+      controller.authorizePost(req, {redirect: spyRedirect});
+      expect(spyRedirect.calledWith('/login?client_id=' + clientId +
+        '&redirect_uri=' + redirectUri)).to.be.ok();
+    });
 
+    it('sould call next callback', function() {
+      var req = {
+        session: {
+          user: user
+        },
+        query: query
+      };
+      var spyNext = sandbox.spy();
+      var spyRedirect = sandbox.spy();
+      controller.authorizePost(req, {redirect: spyRedirect}, spyNext);
+      expect(spyNext.called).to.be.ok();
+      expect(spyRedirect.called).to.not.be.ok();
+    });
+  });
+
+  describe('authorize get', function() {
     it('should render authorize page', function() {
       var req = {
         session: {

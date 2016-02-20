@@ -37,6 +37,21 @@ module.exports.authorizeGet = function(req, res) {
 };
 
 /**
+ * controller for authorize authorize post, redirect to login if no user, next middleware if login
+ * @param {object} req request
+ * @param {object} res response
+ * @param {callback} next jump to next middleware
+ */
+module.exports.authorizePost = function(req, res, next) {
+  if (!req.session.user) {
+    res.redirect('/login?client_id=' + req.query.client_id +
+      '&redirect_uri=' + req.query.redirect_uri);
+    return;
+  }
+  next();
+};
+
+/**
  * controller for login page, render the login page
  * @param {object} req request
  * @param {object} res response
