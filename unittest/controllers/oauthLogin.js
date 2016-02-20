@@ -20,7 +20,7 @@ var controller = require('../../controllers/oauth');
 var expect = require('expect.js');
 var Promise = require('bluebird');
 
-describe('oauthRoutes', function() {
+describe('controllers', function() {
   var sandbox;
   var stubGetUser;
   var redirect = 'test_login_post';
