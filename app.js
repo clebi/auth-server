@@ -19,6 +19,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var loggers = require('./config/loggers');
+var config = require('./config/config');
 
 var oauth = require('./routes/oauth');
 
@@ -36,10 +37,19 @@ app.use(session({
 }));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+app.use(function(req, res, next) {
+  req.config = {
+    path: config.get('path')
+  };
+  if (!req.config.path || !req.config.path.base || !req.config.path.authorize || !req.config.path.login) {
+    throw new Error('missing path configuration');
+  }
+  next();
+});
 
 app.set('view engine', 'jade');
 
-app.use('/oauth/v1', oauth);
+app.use(config.get('path:base'), oauth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -50,7 +60,7 @@ app.use(function(req, res, next) {
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
+app.use(function(err, req, res) {
   loggers.error.error(err);
   res.status(err.status || 500);
   res.send();

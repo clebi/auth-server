@@ -24,15 +24,18 @@ var userService = require('../services/userService');
 module.exports.authorizeGet = function(req, res) {
   if (!req.session.user) {
     // If they aren't logged in, send them to your own login implementation
-    res.redirect('/oauth/v1/login?redirect=/oauth/v1/authorize&client_id=' +
-        req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
+    res.redirect(req.config.path.base + req.config.path.login +
+        '?redirect=' + req.config.path.base + req.config.path.authorize +
+        '&client_id=' + req.query.client_id +
+        '&redirect_uri=' + req.query.redirect_uri);
     return;
   }
 
   res.render('authorize', {
     title: 'Authorize',
     client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri
+    redirect_uri: req.query.redirect_uri,
+    post_url: req.config.path.base + req.config.path.authorize
   });
 };
 
@@ -44,7 +47,8 @@ module.exports.authorizeGet = function(req, res) {
  */
 module.exports.authorizePost = function(req, res, next) {
   if (!req.session.user) {
-    res.redirect('/oauth/v1/login?client_id=' + req.query.client_id +
+    res.redirect(req.config.path.base + req.config.path.login +
+      '?client_id=' + req.query.client_id +
       '&redirect_uri=' + req.query.redirect_uri);
     return;
   }
@@ -61,7 +65,8 @@ module.exports.loginGet = function(req, res) {
     title: 'Login',
     redirect: req.query.redirect,
     client_id: req.query.client_id,
-    redirect_uri: req.query.redirect_uri
+    redirect_uri: req.query.redirect_uri,
+    post_url: req.config.path.base + req.config.path.login
   });
 };
 
@@ -76,7 +81,8 @@ module.exports.loginPost = function(req, res, next) {
         title: 'Login',
         redirect: req.body.redirect,
         client_id: req.body.client_id,
-        redirect_uri: req.body.redirect_uri
+        redirect_uri: req.body.redirect_uri,
+        post_url: req.config.path.base + req.config.path.login
       });
       return;
     }

@@ -25,6 +25,13 @@ describe('controllers', function() {
   var stubGetUser;
   var redirect = 'test_login_post';
   var clientId = 'test_login_post';
+  var config = {
+    path: {
+      base: '/test',
+      authorize: 'athorize',
+      login: '/login'
+    }
+  };
   var user = {
     user_id: 42,
     username: 'test_login_post',
@@ -43,12 +50,14 @@ describe('controllers', function() {
 
   describe('login post', function() {
     var req = {
+      config: config,
       body: {
         redirect: redirect,
         client_id: clientId,
         username: user.username,
         password: user.password,
-        redirect_uri: redirectUri
+        redirect_uri: redirectUri,
+        post_url: config.path.base + config.path.login
       },
       session: {}
     };
@@ -79,7 +88,8 @@ describe('controllers', function() {
             title: 'Login',
             redirect: req.body.redirect,
             client_id: req.body.client_id,
-            redirect_uri: req.body.redirect_uri
+            redirect_uri: req.body.redirect_uri,
+            post_url: config.path.base + config.path.login
           })).to.be.ok();
           done();
         } catch (err) {
@@ -106,6 +116,7 @@ describe('controllers', function() {
 
   describe('loginGet', function() {
     var req = {
+      config: config,
       query: {
         redirect: redirect,
         client_id: clientId,
@@ -120,7 +131,8 @@ describe('controllers', function() {
         title: 'Login',
         redirect: req.query.redirect,
         client_id: req.query.client_id,
-        redirect_uri: req.query.redirect_uri
+        redirect_uri: req.query.redirect_uri,
+        post_url: config.path.base + config.path.login
       })).to.be.ok();
     });
   });

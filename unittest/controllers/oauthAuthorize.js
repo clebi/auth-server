@@ -22,6 +22,13 @@ describe('controllers', function() {
   var sandbox;
   var clientId = 'test_client_id';
   var redirectUri = 'test_redirect_uri';
+  var config = {
+    path: {
+      base: '/test',
+      authorize: 'athorize',
+      login: '/login'
+    }
+  };
   var query = {
     client_id: clientId,
     redirect_uri: redirectUri
@@ -43,12 +50,14 @@ describe('controllers', function() {
   describe('authorize post', function() {
     it('should redirect to login', function() {
       var req = {
+        config: config,
         session: {},
         query: query
       };
       var spyRedirect = sandbox.spy();
       controller.authorizePost(req, {redirect: spyRedirect});
-      expect(spyRedirect.calledWith('/oauth/v1/login?client_id=' + clientId +
+      expect(spyRedirect.calledWith(config.path.base + config.path.login +
+        '?client_id=' + clientId +
         '&redirect_uri=' + redirectUri)).to.be.ok();
     });
 
@@ -70,6 +79,7 @@ describe('controllers', function() {
   describe('authorize get', function() {
     it('should render authorize page', function() {
       var req = {
+        config: config,
         session: {
           user: {}
         },
@@ -80,19 +90,23 @@ describe('controllers', function() {
       expect(spyRender.calledWith('authorize', {
         title: 'Authorize',
         client_id: clientId,
-        redirect_uri: redirectUri
+        redirect_uri: redirectUri,
+        post_url: config.path.base + config.path.authorize
       })).to.be.ok();
     });
 
     it('should redirect user to login', function() {
       var spyRedirect = sandbox.spy();
       var req = {
+        config: config,
         session: {},
         query: query
       };
       controller.authorizeGet(req, {redirect: spyRedirect});
-      expect(spyRedirect.calledWith('/oauth/v1/login?redirect=/oauth/v1/authorize&client_id=' +
-          req.query.client_id + '&redirect_uri=' + req.query.redirect_uri)).to.be.ok();
+      expect(spyRedirect.calledWith(config.path.base + config.path.login +
+          '?redirect=' + config.path.base + config.path.authorize +
+          '&client_id=' + req.query.client_id +
+          '&redirect_uri=' + req.query.redirect_uri)).to.be.ok();
     });
   });
 });

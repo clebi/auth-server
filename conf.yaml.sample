@@ -21,6 +21,11 @@ server:
         level: error
         path: "./error.log"
 
+path:
+  base: /oauth/v1
+  authorize: /authorize
+  login: /login
+
 database:
   host: host.vnet
   username: expapp

@@ -18,6 +18,7 @@ var express = require('express');
 var oauthServer = require('oauth2-server');
 var controller = require('../controllers/oauth');
 var router = new express.Router();
+var config = require('../config/config');
 
 var oauth = oauthServer({
   model: require('../services/oauthService'),
@@ -30,10 +31,10 @@ var oauth = oauthServer({
 router.all('/token', oauth.grant());
 
 // Show them the "do you authorise xyz app to access your content?" page
-router.get('/authorize', controller.authorizeGet);
+router.get(config.get('path:authorize'), controller.authorizeGet);
 
 // Handle authorise
-router.post('/authorize', controller.authorizePost, oauth.authCodeGrant(function(req, next) {
+router.post(config.get('path:authorize'), controller.authorizePost, oauth.authCodeGrant(function(req, next) {
   // The first param should to indicate an error
   // The second param should a bool to indicate if the user did authorise the app
   // The third param should for the user/uid (only used for passing to saveAuthCode)
@@ -41,10 +42,10 @@ router.post('/authorize', controller.authorizePost, oauth.authCodeGrant(function
 }));
 
 // Show login
-router.get('/login', controller.loginGet);
+router.get(config.get('path:login'), controller.loginGet);
 
 // Handle login
-router.post('/login', controller.loginPost);
+router.post(config.get('path:login'), controller.loginPost);
 
 router.use(oauth.errorHandler());
 
