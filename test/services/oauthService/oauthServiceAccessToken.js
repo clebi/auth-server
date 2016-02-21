@@ -124,6 +124,8 @@ describe('OauthServiceAccessToken', function() {
         }).then(function(token) {
           assert.equal(testToken, token.access_token);
           assert.deepEqual(tokenExpires, token.expires);
+          expect(token.fk_user_id).to.be.above(0);
+          expect(token.fk_client_id).to.be(clientId);
           done();
         });
       });

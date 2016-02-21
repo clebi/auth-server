@@ -97,7 +97,7 @@ model.saveAccessToken = function(accessToken, clientId, expires, user, callback)
         expires: expires
       }, {transaction: t})];
     }).spread(function(client, dbUser, token) {
-      return [client, dbUser, token];
+      return [client.addOauthAccessToken(token, {transaction: t}), dbUser, token];
     }).spread(function(client, dbUser, token) {
       return dbUser.addOauthAccessToken(token, {transaction: t});
     });
