@@ -3,7 +3,7 @@ extend ./layout.jade
 block content
   div(class="col-md-3 col-md-offset-4")
     h1="Login requested"
-    form(method="POST", action="/oauth/login")
+    form(method="POST", action="/oauth/v1/login")
       div(class="form-group")
         label(for="username_input")="Username: "
         input(id="username_input", type="text", name="username", placeholder="Username", class="form-control")

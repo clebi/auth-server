@@ -24,7 +24,7 @@ var userService = require('../services/userService');
 module.exports.authorizeGet = function(req, res) {
   if (!req.session.user) {
     // If they aren't logged in, send them to your own login implementation
-    res.redirect('/oauth/login?redirect=/oauth/authorize&client_id=' +
+    res.redirect('/oauth/v1/login?redirect=/oauth/v1/authorize&client_id=' +
         req.query.client_id + '&redirect_uri=' + req.query.redirect_uri);
     return;
   }
@@ -44,7 +44,7 @@ module.exports.authorizeGet = function(req, res) {
  */
 module.exports.authorizePost = function(req, res, next) {
   if (!req.session.user) {
-    res.redirect('/login?client_id=' + req.query.client_id +
+    res.redirect('/oauth/v1/login?client_id=' + req.query.client_id +
       '&redirect_uri=' + req.query.redirect_uri);
     return;
   }

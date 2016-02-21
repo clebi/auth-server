@@ -48,7 +48,7 @@ describe('controllers', function() {
       };
       var spyRedirect = sandbox.spy();
       controller.authorizePost(req, {redirect: spyRedirect});
-      expect(spyRedirect.calledWith('/login?client_id=' + clientId +
+      expect(spyRedirect.calledWith('/oauth/v1/login?client_id=' + clientId +
         '&redirect_uri=' + redirectUri)).to.be.ok();
     });
 
@@ -91,7 +91,7 @@ describe('controllers', function() {
         query: query
       };
       controller.authorizeGet(req, {redirect: spyRedirect});
-      expect(spyRedirect.calledWith('/oauth/login?redirect=/oauth/authorize&client_id=' +
+      expect(spyRedirect.calledWith('/oauth/v1/login?redirect=/oauth/v1/authorize&client_id=' +
           req.query.client_id + '&redirect_uri=' + req.query.redirect_uri)).to.be.ok();
     });
   });
