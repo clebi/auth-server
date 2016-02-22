@@ -19,6 +19,7 @@ var oauthServer = require('oauth2-server');
 var controller = require('../controllers/oauth');
 var router = new express.Router();
 var config = require('../config/config');
+var authMiddleware = require('../middelwares/authMiddleware');
 
 var oauth = oauthServer({
   model: require('../services/oauthService'),
@@ -26,6 +27,8 @@ var oauth = oauthServer({
   authCodeLifetime: 1200,
   debug: true
 });
+
+router.post(config.get('path:introspect'), authMiddleware.basicAuth, controller.introspectPost);
 
 // Handle token grant requests
 router.all('/token', oauth.grant());

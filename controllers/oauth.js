@@ -15,6 +15,8 @@ limitations under the License.
 */
 
 var userService = require('../services/userService');
+var OauthAccessTokenService = require('../services/oauthAccessTokenService');
+var Promise = require('bluebird');
 
 /**
  * controller for authorize get, redirect to login if no user, render authorize page if user data is there
@@ -87,5 +89,35 @@ module.exports.loginPost = function(req, res, next) {
       return;
     }
     next(error);
+  });
+};
+
+module.exports.introspectPost = function(req, res, next) {
+  return new Promise(function(resolve) {
+    if (!req.body.token) {
+      res.status(400).json({code: 400, message: 'missing token'});
+      resolve();
+      return;
+    }
+    OauthAccessTokenService.getAccessToken(req.body.token).then(function(token) {
+      return Promise.join(token, token.getUser(), token.getOauthClient());
+    }).spread(function(token, user, client) {
+      var now = new Date();
+      res.status(200).json({
+        active: now < token.expires,
+        client_id: client.client_id,
+        username: user.username,
+        token_type: 'access_token'
+      });
+      resolve();
+    }).catch(function(error) {
+      if (error instanceof OauthAccessTokenService.OauthAccessTokenNotFound) {
+        res.status(401).json({code: 400, message: 'invalid token'});
+        resolve();
+        return;
+      }
+      next(error);
+      resolve();
+    });
   });
 };

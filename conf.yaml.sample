@@ -25,6 +25,7 @@ path:
   base: /oauth/v1
   authorize: /authorize
   login: /login
+  introspect: '/introspect'
 
 database:
   host: host.vnet
