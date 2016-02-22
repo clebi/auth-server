@@ -8,12 +8,6 @@ server:
         level: info
       logstash:
         level: info
-    app:
-      console:
-        level: info
-      file:
-        level: error
-        path: "./app.log"
     error:
       console:
         level: info

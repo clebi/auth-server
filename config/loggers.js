@@ -20,17 +20,6 @@ var bunyanLogstash = require('bunyan-logstash');
 var expressBunyan = require('express-bunyan-logger');
 
 module.exports = {
-  app: bunyan.createLogger({
-    name: 'app',
-    streams: [{
-      level: config.get('server:logging:app:console:level'),
-      stream: process.stdout
-    },
-    {
-      level: config.get('server:logging:app:file:level'),
-      path: config.get('server:logging:app:file:path')
-    }]
-  }),
   express: expressBunyan({
     name: 'express',
     streams: [
