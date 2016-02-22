@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 var sinon = require('sinon');
-var auth = require('../../middelwares/authMiddleware');
+var auth = require('../../middlewares/authMiddleware');
 var oauthClientService = require('../../services/oauthClientService');
 var expect = require('expect.js');
 

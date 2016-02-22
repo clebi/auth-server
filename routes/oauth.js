@@ -19,7 +19,7 @@ var oauthServer = require('oauth2-server');
 var controller = require('../controllers/oauth');
 var router = new express.Router();
 var config = require('../config/config');
-var authMiddleware = require('../middelwares/authMiddleware');
+var authMiddleware = require('../middlewares/authMiddleware');
 
 var oauth = oauthServer({
   model: require('../services/oauthService'),
