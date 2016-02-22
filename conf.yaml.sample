@@ -3,17 +3,21 @@ server:
   port: 3000
 
   logging:
-    express:
-      console:
-        level: info
+    loggers:
+      express:
+        console:
+          level: info
+        logstash:
+          level: info
+      errors:
+        console:
+          level: info
+        logstash:
+          level: info
+    transports:
       logstash:
-        level: info
-    error:
-      console:
-        level: info
-      file:
-        level: error
-        path: "./error.log"
+        host: 127.0.0.1
+        port: 5699
 
 path:
   base: /oauth/v1

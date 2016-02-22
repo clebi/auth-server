@@ -16,36 +16,43 @@ limitations under the License.
 
 var config = require('./config');
 var bunyan = require('bunyan');
-var bunyanLogstash = require('bunyan-logstash');
+var bunyanLogstash = require('bunyan-logstash-tcp');
 var expressBunyan = require('express-bunyan-logger');
+var confLoggers = config.get('server:logging:loggers');
+var confTransports = config.get('server:logging:transports');
+
+var logstashStream = bunyanLogstash.createStream({
+  host: confTransports.logstash.host,
+  port: confTransports.logstash.port
+});
 
 module.exports = {
   express: expressBunyan({
     name: 'express',
     streams: [
       {
-        level: config.get('server:logging:express:console:level'),
+        level: confLoggers.express.console.level,
         stream: process.stdout
       },
       {
         type: 'raw',
-        level: config.get('server:logging:express:logstash:level'),
-        stream: bunyanLogstash.createStream({
-          host: '192.168.56.3',
-          port: 5699
-        })
+        level: confLoggers.express.logstash.info,
+        stream: logstashStream
       }
     ]
   }),
-  error: bunyan.createLogger({
-    name: 'error',
-    streams: [{
-      level: config.get('server:logging:error:console:level'),
-      stream: process.stdout
-    },
-    {
-      level: config.get('server:logging:error:file:level'),
-      path: config.get('server:logging:error:file:path')
-    }]
+  errors: bunyan.createLogger({
+    name: 'errors',
+    streams: [
+      {
+        level: confLoggers.errors.console.level,
+        stream: process.stdout
+      },
+      {
+        type: 'raw',
+        level: confLoggers.errors.logstash.level,
+        stream: logstashStream
+      }
+    ]
   })
 };

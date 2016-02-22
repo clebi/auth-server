@@ -54,14 +54,19 @@ app.use(config.get('path:base'), oauth);
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
+  err.level = 'warn';
   err.status = 404;
   next(err);
 });
 
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res) {
-  loggers.error.error(err);
+app.use(function(err, req, res, next) {
+  if (err.level && err.level === 'warn') {
+    loggers.errors.warn(err);
+  } else {
+    loggers.errors.error(err);
+  }
   res.status(err.status || 500);
   res.send();
 });
