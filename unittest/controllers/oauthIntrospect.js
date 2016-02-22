@@ -19,6 +19,66 @@ var OauthAccessTokenService = require('../../services/oauthAccessTokenService');
 var controller = require('../../controllers/oauth');
 var expect = require('expect.js');
 var Promise = require('bluebird');
+var moment = require('moment');
+
+/**
+ * create an access token for testing purpose
+ * @method createAccessToken
+ * @param  {string} token    access token string
+ * @param  {Date} expires  token expiration time
+ * @param  {string} username username
+ * @param  {string} clientId id of the client
+ * @return {object} a new access token object
+ */
+function createAccessToken(token, expires, username, clientId) {
+  return {
+    access_token: token,
+    expires: expires,
+    getUser: function() {
+      return {
+        user_id: 42,
+        username: username,
+        password: 'test_password'
+      };
+    },
+    getOauthClient: function() {
+      return {
+        client_id: clientId,
+        client_secret: 'test_client_secret',
+        redirect_uri: 'test_redirect_uri'
+      };
+    }
+  };
+}
+
+/**
+ * create a new request for testing prupose
+ * @method createRequest
+ * @param  {string} token access token that will be in the request
+ * @return {object} a new request
+ */
+function createRequest(token) {
+  return {
+    body: {
+      token: token
+    }
+  };
+}
+
+/**
+ * create a response object for testing purpose
+ * @method createResponse
+ * @param  {sinon.sandbox} sandbox sandbox for test doubles
+ * @return {object} new response object with test doubles
+ */
+function createResponse(sandbox) {
+  var res = {
+    status: sandbox.stub(),
+    json: sandbox.spy()
+  };
+  res.status.returns(res);
+  return res;
+}
 
 describe('controllers', function() {
   var sandbox;
@@ -39,50 +99,19 @@ describe('controllers', function() {
 
   describe('introspect', function() {
     it('should send a http code 400 for missing token', function() {
-      var req = {
-        body: {}
-      };
-      var res = {
-        status: sandbox.stub(),
-        json: sandbox.spy()
-      };
-      res.status.returns(res);
+      var req = createRequest(null);
+      var res = createResponse(sandbox);
       controller.introspectPost(req, res, spyNext);
       expect(res.status.calledWith(400)).to.be.ok();
       expect(res.json.calledWith()).to.be.ok({code: 400, message: 'missing token'});
       expect(spyNext.called).not.to.be.ok();
     });
 
-    it('should send a json response for valid access token', function() {
+    it('should send a valid json response for inactive token', function() {
       var token = 'test_token';
-      var req = {
-        body: {
-          token: token
-        }
-      };
-      var res = {
-        status: sandbox.stub(),
-        json: sandbox.spy()
-      };
-      var accessToken = {
-        access_token: token,
-        expires: new Date(),
-        getUser: function() {
-          return {
-            user_id: 42,
-            username: testUsername,
-            password: 'test_password'
-          };
-        },
-        getOauthClient: function() {
-          return {
-            client_id: testClientId,
-            client_secret: 'test_client_secret',
-            redirect_uri: 'test_redirect_uri'
-          };
-        }
-      };
-      res.status.returns(res);
+      var req = createRequest(token);
+      var res = createResponse(sandbox);
+      var accessToken = createAccessToken(token, new Date(), testUsername, testClientId);
       stubGetAccessToken.returns(Promise.resolve(accessToken));
       controller.introspectPost(req, res, spyNext).then(function() {
         expect(res.status.calledWith(200)).to.be.ok();
@@ -96,24 +125,44 @@ describe('controllers', function() {
       });
     });
 
-    it('should send a json response for invalid access token', function() {
+    it('should send a valid json response for active token', function() {
       var token = 'test_token';
-      var req = {
-        body: {
-          token: token
-        }
-      };
-      var res = {
-        status: sandbox.stub(),
-        json: sandbox.spy()
-      };
-      res.status.returns(res);
+      var req = createRequest(token);
+      var res = createResponse(sandbox);
+      var accessToken = createAccessToken(token, moment().add(1, 'days').toDate(), testUsername, testClientId);
+      stubGetAccessToken.returns(Promise.resolve(accessToken));
+      controller.introspectPost(req, res, spyNext).then(function() {
+        expect(res.status.calledWith(200)).to.be.ok();
+        expect(res.json.calledWith({
+          active: true,
+          client_id: testClientId,
+          username: testUsername,
+          token_type: 'access_token'
+        })).to.be.ok();
+      });
+    });
+
+    it('should send a json response for invalid access token with http code 401', function() {
+      var token = 'test_token';
+      var req = createRequest(token);
+      var res = createResponse(sandbox);
       stubGetAccessToken.returns(Promise.reject(
         new OauthAccessTokenService.OauthAccessTokenNotFound('unable to find token')));
       controller.introspectPost(req, res, spyNext).then(function() {
         expect(res.status.calledWith(401)).to.be.ok();
         expect(res.json.calledWith({code: 400, message: 'invalid token'})).to.be.ok();
         expect(spyNext.called).not.to.be.ok();
+      });
+    });
+
+    it('should call next with error', function() {
+      var token = 'test_token';
+      var req = createRequest(token);
+      var res = createResponse(sandbox);
+      var error = new Error('random error');
+      stubGetAccessToken.returns(Promise.reject(error));
+      controller.introspectPost(req, res, spyNext).then(function() {
+        expect(spyNext.calledWith(error)).to.be.ok();
       });
     });
   });
