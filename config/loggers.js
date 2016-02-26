@@ -22,8 +22,8 @@ var confLoggers = config.get('server:logging:loggers');
 var confTransports = config.get('server:logging:transports');
 
 var logstashStream = bunyanLogstash.createStream({
-  host: confTransports.logstash.host,
-  port: confTransports.logstash.port
+  host: config.get('LOGSTASH_HOST') || confTransports.logstash.host,
+  port: config.get('LOGSTASH_PORT') || confTransports.logstash.port
 });
 
 module.exports = {

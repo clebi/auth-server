@@ -25,6 +25,8 @@ nconf.argv({
   }
 });
 
+nconf.env(['LOGSTASH_HOST', 'LOGSTASH_PORT']);
+
 nconf.file({
   file: nconf.get('conf'),
   format: require('nconf-yaml')
