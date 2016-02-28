@@ -18,12 +18,12 @@ var config = require('./config');
 var bunyan = require('bunyan');
 var bunyanLogstash = require('bunyan-logstash-tcp');
 var expressBunyan = require('express-bunyan-logger');
-var confLoggers = config.get('server:logging:loggers');
-var confTransports = config.get('server:logging:transports');
+var confLoggers = config.get('auth_server:logging:loggers');
+var confTransports = config.get('auth_server:logging:transports');
 
 var logstashStream = bunyanLogstash.createStream({
-  host: config.get('LOGSTASH_HOST') || confTransports.logstash.host,
-  port: config.get('LOGSTASH_PORT') || confTransports.logstash.port
+  host: config.get('auth_server_logstash_host') || confTransports.logstash.host,
+  port: config.get('auth_server_logstash_port') || confTransports.logstash.port
 });
 
 module.exports = {

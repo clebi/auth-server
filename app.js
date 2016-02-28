@@ -39,7 +39,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
   req.config = {
-    path: config.get('path')
+    path: config.get('auth_server:path')
   };
   if (!req.config.path || !req.config.path.base || !req.config.path.authorize || !req.config.path.login) {
     throw new Error('missing path configuration');
@@ -49,7 +49,7 @@ app.use(function(req, res, next) {
 
 app.set('view engine', 'jade');
 
-app.use(config.get('path:base'), oauth);
+app.use(config.get('auth_server:path:base'), oauth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

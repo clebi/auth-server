@@ -1,4 +1,4 @@
-server:
+auth_server:
   listen_addr: localhost
   port: 3000
 
@@ -19,15 +19,15 @@ server:
         host: 127.0.0.1
         port: 5699
 
-path:
-  base: /oauth/v1
-  authorize: /authorize
-  login: /login
-  introspect: '/introspect'
+  path:
+    base: /oauth/v1
+    authorize: /authorize
+    login: /login
+    introspect: '/introspect'
 
-database:
-  host: host.vnet
-  username: expapp
-  password: expapp
-  database: expapp
-  dialect: postgres
+  database:
+    host: host.vnet
+    username: expapp
+    password: expapp
+    database: expapp
+    dialect: postgres

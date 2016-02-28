@@ -28,27 +28,30 @@ var oauth = oauthServer({
   debug: true
 });
 
-router.post(config.get('path:introspect'), authMiddleware.basicAuth, controller.introspectPost);
+router.post(config.get('auth_server:path:introspect'), authMiddleware.basicAuth, controller.introspectPost);
 
 // Handle token grant requests
 router.all('/token', oauth.grant());
 
 // Show them the "do you authorise xyz app to access your content?" page
-router.get(config.get('path:authorize'), controller.authorizeGet);
+router.get(config.get('auth_server:path:authorize'), controller.authorizeGet);
 
 // Handle authorise
-router.post(config.get('path:authorize'), controller.authorizePost, oauth.authCodeGrant(function(req, next) {
+router.post(
+  config.get('auth_server:path:authorize'),
+  controller.authorizePost, oauth.authCodeGrant(function(req, next) {
   // The first param should to indicate an error
   // The second param should a bool to indicate if the user did authorise the app
   // The third param should for the user/uid (only used for passing to saveAuthCode)
-  next(null, req.body.allow === 'true', req.session.user.user_id, req.session.user);
-}));
+    next(null, req.body.allow === 'true', req.session.user.user_id, req.session.user);
+  })
+);
 
 // Show login
-router.get(config.get('path:login'), controller.loginGet);
+router.get(config.get('auth_server:path:login'), controller.loginGet);
 
 // Handle login
-router.post(config.get('path:login'), controller.loginPost);
+router.post(config.get('auth_server:path:login'), controller.loginPost);
 
 router.use(oauth.errorHandler());
 

@@ -20,7 +20,7 @@ var fs = require('fs');
 var path = require('path');
 var Sequelize = require('sequelize');
 var basename = path.basename(module.filename);
-var config = require('../config/config').get('database');
+var config = require('../config/config').get('auth_server:database');
 var db = {};
 
 var sequelize = new Sequelize(config.database, config.username, config.password, config);

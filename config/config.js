@@ -25,7 +25,10 @@ nconf.argv({
   }
 });
 
-nconf.env(['LOGSTASH_HOST', 'LOGSTASH_PORT']);
+nconf.env({
+  separator: '__',
+  lowerCase: true
+});
 
 nconf.file({
   file: nconf.get('conf'),

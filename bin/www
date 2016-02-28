@@ -11,7 +11,7 @@ var config = require('../config/config');
 /**
  * Get port from environment and store in Express.
  */
-var port = normalizePort(config.get('server:port'));
+var port = normalizePort(config.get('auth_server:port'));
 app.set('port', port);
 
 /**
