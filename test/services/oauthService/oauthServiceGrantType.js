@@ -43,7 +43,8 @@ describe('OauthServiceGrantType', function() {
           });
         }).then(function() {
           done();
-        }).catch(function() {
+        }).catch(function(error) {
+          done(error);
         });
       });
     });

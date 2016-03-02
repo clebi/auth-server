@@ -58,7 +58,8 @@ describe('OauthServiceAuthcode', function() {
           });
         }).then(function() {
           done();
-        }).catch(function() {
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
@@ -110,6 +111,8 @@ describe('OauthServiceAuthcode', function() {
           );
         }).then(function() {
           done();
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
@@ -134,6 +137,8 @@ describe('OauthServiceAuthcode', function() {
           expect(oauthClient.client_id).to.be(clientId);
           expect(user.user_id).to.be(userId);
           done();
+        }).catch(function(error) {
+          done(error);
         });
       });
     });

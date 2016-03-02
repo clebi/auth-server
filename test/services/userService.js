@@ -35,6 +35,8 @@ describe('userService', function() {
           }, {transaction: t});
         }).then(function() {
           done();
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
@@ -46,6 +48,8 @@ describe('userService', function() {
         expect(user.username).to.be(username);
         expect(bcrypt.compareSync(password, user.password)).to.be.ok();
         done();
+      }).catch(function(error) {
+        done(error);
       });
     });
 

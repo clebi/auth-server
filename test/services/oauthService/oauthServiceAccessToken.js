@@ -52,7 +52,8 @@ describe('OauthServiceAccessToken', function() {
          });
         }).then(function() {
           done();
-        }).catch(function() {
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
@@ -107,7 +108,8 @@ describe('OauthServiceAccessToken', function() {
           });
         }).then(function() {
           done();
-        }).catch(function() {
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
@@ -127,6 +129,8 @@ describe('OauthServiceAccessToken', function() {
           expect(token.fk_user_id).to.be.above(0);
           expect(token.fk_client_id).to.be(clientId);
           done();
+        }).catch(function(error) {
+          done(error);
         });
       });
     });

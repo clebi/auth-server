@@ -36,6 +36,8 @@ describe('oauthClientService', function() {
           }, {transaction: t});
         }).then(function() {
           done();
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
@@ -51,6 +53,8 @@ describe('oauthClientService', function() {
         } catch (error) {
           done(error);
         }
+      }).catch(function(error) {
+        done(error);
       });
     });
 

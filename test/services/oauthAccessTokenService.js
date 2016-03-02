@@ -80,6 +80,8 @@ describe('OauthAccessTokenService', function() {
           });
         }).then(function() {
           done();
+        }).catch(function(error) {
+          done(error);
         });
       });
     });

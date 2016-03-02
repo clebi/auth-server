@@ -39,7 +39,8 @@ describe('OauthServiceClient', function() {
           }, {transaction: t});
         }).then(function() {
           done();
-        }).catch(function() {
+        }).catch(function(error) {
+          done(error);
         });
       });
     });
