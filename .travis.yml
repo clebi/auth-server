@@ -4,6 +4,11 @@ node_js:
 compiler: clang-3.6
 env:
   - CXX=clang-3.6
+  - AUTH_SERVER__DATABASE__HOST=127.0.0.1
+  - AUTH_SERVER__DATABASE__PORT=5432
+  - AUTH_SERVER__DATABASE__DATABASE=auth_server_test
+  - AUTH_SERVER__DATABASE__USERNAME=postgres
+  - AUTH_SERVER__DATABASE__PASSWORD=
 addons:
   apt:
     sources:
@@ -12,3 +17,9 @@ addons:
     packages:
       - clang-3.6
       - g++-4.8
+
+services:
+  - "postgresql"
+
+before_script:
+  - psql -c 'create database auth_server_test;' -U postgres

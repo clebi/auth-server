@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www --conf $AUTH_SERVER_CONFIG_PATH",
-    "test": "mocha --recursive unittest/ --conf conf.yaml.sample"
+    "test": "mocha --recursive unittest/ --conf conf.yaml.sample && mocha --recursive test/ --conf conf.yaml.sample"
   },
   "dependencies": {
     "basic-auth": "~1.0.3",
