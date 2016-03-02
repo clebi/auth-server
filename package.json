@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www --conf $AUTH_SERVER_CONFIG_PATH"
+    "start": "node ./bin/www --conf $AUTH_SERVER_CONFIG_PATH",
+    "test": "mocha --recursive unittest/ --conf conf.test.yaml"
   },
   "dependencies": {
     "basic-auth": "~1.0.3",
