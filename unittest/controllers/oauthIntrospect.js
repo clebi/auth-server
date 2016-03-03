@@ -111,7 +111,8 @@ describe('controllers', function() {
       var token = 'test_token';
       var req = createRequest(token);
       var res = createResponse(sandbox);
-      var accessToken = createAccessToken(token, new Date(), testUsername, testClientId);
+      var expires = new Date();
+      var accessToken = createAccessToken(token, expires, testUsername, testClientId);
       stubGetAccessToken.returns(Promise.resolve(accessToken));
       controller.introspectPost(req, res, spyNext).then(function() {
         expect(res.status.calledWith(200)).to.be.ok();
@@ -119,7 +120,8 @@ describe('controllers', function() {
           active: false,
           client_id: testClientId,
           username: testUsername,
-          token_type: 'access_token'
+          token_type: 'access_token',
+          exp: moment(expires).unix()
         })).to.be.ok();
         expect(spyNext.called).not.to.be.ok();
       });
@@ -129,7 +131,8 @@ describe('controllers', function() {
       var token = 'test_token';
       var req = createRequest(token);
       var res = createResponse(sandbox);
-      var accessToken = createAccessToken(token, moment().add(1, 'days').toDate(), testUsername, testClientId);
+      var expires = moment().add(1, 'days');
+      var accessToken = createAccessToken(token, expires.toDate(), testUsername, testClientId);
       stubGetAccessToken.returns(Promise.resolve(accessToken));
       controller.introspectPost(req, res, spyNext).then(function() {
         expect(res.status.calledWith(200)).to.be.ok();
@@ -137,7 +140,8 @@ describe('controllers', function() {
           active: true,
           client_id: testClientId,
           username: testUsername,
-          token_type: 'access_token'
+          token_type: 'access_token',
+          exp: expires.unix()
         })).to.be.ok();
       });
     });
