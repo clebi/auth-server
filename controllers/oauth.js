@@ -18,7 +18,6 @@ var userService = require('../services/userService');
 var OauthAccessTokenService = require('../services/oauthAccessTokenService');
 var Promise = require('bluebird');
 var moment = require('moment');
-var loggers = require('../config/loggers');
 
 /**
  * controller for authorize get, redirect to login if no user, render authorize page if user data is there
@@ -56,7 +55,7 @@ module.exports.authorizePost = function(req, res, next) {
       '&redirect_uri=' + req.query.redirect_uri);
     return;
   }
-  loggers.auth.info({
+  req.loggers.auth.info({
     event: 'authorize',
     client_id: req.query.client_id,
     redirect_uri: req.query.redirect_uri,

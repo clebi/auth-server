@@ -66,13 +66,25 @@ describe('controllers', function() {
         session: {
           user: user
         },
-        query: query
+        query: query,
+        loggers: {
+          auth: {
+            info: sandbox.spy()
+          }
+        }
       };
       var spyNext = sandbox.spy();
       var spyRedirect = sandbox.spy();
       controller.authorizePost(req, {redirect: spyRedirect}, spyNext);
       expect(spyNext.called).to.be.ok();
       expect(spyRedirect.called).to.not.be.ok();
+      expect(req.loggers.auth.info.calledWith({
+        event: 'authorize',
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        user_id: user.user_id,
+        username: user.username
+      })).to.be.ok();
     });
   });
 

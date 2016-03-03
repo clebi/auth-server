@@ -38,6 +38,7 @@ app.use(session({
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
+  req.loggers = loggers;
   req.config = {
     path: config.get('auth_server:path')
   };
