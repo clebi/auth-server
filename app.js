@@ -53,7 +53,7 @@ app.use(config.get('auth_server:path:base'), oauth);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
+  var err = new Error('Not Found: ' + req.path + ' ' + req.method);
   err.level = 'warn';
   err.status = 404;
   next(err);

@@ -17,6 +17,7 @@ limitations under the License.
 var userService = require('../services/userService');
 var OauthAccessTokenService = require('../services/oauthAccessTokenService');
 var Promise = require('bluebird');
+var moment = require('moment');
 
 /**
  * controller for authorize get, redirect to login if no user, render authorize page if user data is there
@@ -107,7 +108,8 @@ module.exports.introspectPost = function(req, res, next) {
         active: now < token.expires,
         client_id: client.client_id,
         username: user.username,
-        token_type: 'access_token'
+        token_type: 'access_token',
+        exp: moment(token.expires).unix()
       });
       resolve();
     }).catch(function(error) {
