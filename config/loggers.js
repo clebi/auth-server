@@ -54,5 +54,13 @@ module.exports = {
         stream: logstashStream
       }
     ]
+  }),
+  auth: bunyan.createLogger({
+    name: 'auth',
+    streams: [{
+      type: 'raw',
+      level: 'info',
+      stream: logstashStream
+    }]
   })
 };
