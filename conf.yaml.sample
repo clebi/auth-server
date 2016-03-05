@@ -23,6 +23,7 @@ auth_server:
     base: /oauth/v1
     authorize: /authorize
     login: /login
+    token: /token
     introspect: '/introspect'
 
   database:

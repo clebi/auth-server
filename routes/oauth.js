@@ -31,7 +31,7 @@ var oauth = oauthServer({
 router.post(config.get('auth_server:path:introspect'), authMiddleware.basicAuth, controller.introspectPost);
 
 // Handle token grant requests
-router.all('/token', oauth.grant());
+router.all(config.get('auth_server:path:token'), oauth.grant());
 
 // Show them the "do you authorise xyz app to access your content?" page
 router.get(config.get('auth_server:path:authorize'), controller.authorizeGet);
