@@ -1,0 +1,35 @@
+auth_server:
+  listen_addr: localhost
+  port: 3000
+
+  logging:
+    loggers:
+      express:
+        console:
+          level: info
+        logstash:
+          level: info
+      errors:
+        console:
+          level: info
+        logstash:
+          level: info
+    transports:
+      logstash:
+        host: logstash
+        port: 5698
+
+  path:
+    base: /oauth/v1
+    authorize: /authorize
+    login: /login
+    introspect: '/introspect'
+
+  database:
+    host: database
+    port: 5432
+    username: auth_server
+    password: auth
+    database: auth_server
+    dialect: postgres
+    logging: false

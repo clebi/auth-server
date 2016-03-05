@@ -1,0 +1,4 @@
+conf*.yml
+node_modules
+.git
+.tags*
