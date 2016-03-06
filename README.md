@@ -11,6 +11,6 @@ The server use Sequelize to access the database that will store all the data.
 In the future, it needs to be able to force user scopes. User will be inserted with a set of scopes that it can access. The server will be responsible for what data the user can access to.
 
 TODO:
-* Add users UI
+* Add users management
 * Logstash transport
 * Add scopes to users
