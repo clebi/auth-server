@@ -16,7 +16,7 @@ limitations under the License.
 
 var util = require('util');
 var basicAuth = require('basic-auth');
-var oauthClientService = require('../services/oauthClientService');
+var resourceServerService = require('../services/resourceServerService');
 
 /**
  * Authentication error
@@ -42,17 +42,18 @@ module.exports.basicAuth = function(req, res, next) {
     var authClient = basicAuth(req);
     if (!authClient || !authClient.name || !authClient.pass) {
       reject(new AuthError('unable to authenticate client, bad authorization header'));
+      return;
     }
     resolve(authClient);
   }).then(function(authClient) {
-    return oauthClientService.getClient(authClient.name).then(function(client) {
-      if (client.client_secret !== authClient.pass) {
+    return resourceServerService.getResourceServer(authClient.name).then(function(client) {
+      if (client.secret !== authClient.pass) {
         throw new AuthError('unable to authenticate client, bad credentials');
       }
       next();
     });
   }).catch(function(error) {
-    if (error instanceof oauthClientService.ClientNotFound || error instanceof AuthError) {
+    if (error instanceof resourceServerService.ResourceServerNotFound || error instanceof AuthError) {
       res.status(401).json({code: 401, message: 'bad credentials'});
       return;
     }

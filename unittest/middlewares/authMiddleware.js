@@ -16,7 +16,7 @@ limitations under the License.
 
 var sinon = require('sinon');
 var auth = require('../../middlewares/authMiddleware');
-var oauthClientService = require('../../services/oauthClientService');
+var resourceServerService = require('../../services/resourceServerService');
 var expect = require('expect.js');
 
 /**
@@ -51,11 +51,11 @@ function checkBadAuthResponse(stubStatus, spyJson, done) {
 
 describe('auth middleware', function() {
   var sandbox;
-  var stubOauthClientService;
+  var stubResourceServerService;
 
   beforeEach(function() {
     sandbox = sinon.sandbox.create();
-    stubOauthClientService = sandbox.stub(oauthClientService, 'getClient');
+    stubResourceServerService = sandbox.stub(resourceServerService, 'getResourceServer');
   });
 
   afterEach(function() {
@@ -63,15 +63,15 @@ describe('auth middleware', function() {
   });
 
   describe('basic auth', function() {
-    var client = {
-      client_id: 'test_basic_auth_name',
-      client_secret: 'test_basic_auth_pass',
-      redirect_uri: 'test_url'
+    var resourceServer = {
+      resource_server_id: 'test_resource_server_id',
+      secret: 'test_resource_server_secret',
+      enabled: true
     };
-    var reqUserWithValidSecret = buildRequest(client.client_id, client.client_secret);
+    var reqUserWithValidSecret = buildRequest(resourceServer.resource_server_id, resourceServer.secret);
 
     it('should call next middleware', function(done) {
-      stubOauthClientService.returns(Promise.resolve(client));
+      stubResourceServerService.returns(Promise.resolve(resourceServer));
       var res = {};
       var nextSpy = sandbox.spy();
       auth.basicAuth(reqUserWithValidSecret, res, nextSpy).then(function() {
@@ -81,6 +81,8 @@ describe('auth middleware', function() {
         } catch (error) {
           done(error);
         }
+      }).catch(function(error) {
+        done(error);
       });
     });
 
@@ -99,10 +101,10 @@ describe('auth middleware', function() {
     });
 
     it('should send a json error with code 401 for bad password', function(done) {
-      stubOauthClientService.returns(Promise.resolve(client));
+      stubResourceServerService.returns(Promise.resolve(resourceServer));
       var stubStatus = sandbox.stub();
       var spyJson = sandbox.spy();
-      var req = buildRequest(client.client_id, 'bad_password');
+      var req = buildRequest(resourceServer.client_id, 'bad_password');
       var res = {
         status: stubStatus,
         json: spyJson
@@ -114,7 +116,7 @@ describe('auth middleware', function() {
     });
 
     it('should send a json error with code 401 for client not found', function(done) {
-      stubOauthClientService.returns(Promise.reject(new oauthClientService.ClientNotFound()));
+      stubResourceServerService.returns(Promise.reject(new resourceServerService.ResourceServerNotFound()));
       var stubStatus = sandbox.stub();
       var spyJson = sandbox.spy();
       var res = {
@@ -129,7 +131,7 @@ describe('auth middleware', function() {
 
     it('should call next widdleware with an error', function(done) {
       var error = new Error('test_error');
-      stubOauthClientService.returns(Promise.reject(error));
+      stubResourceServerService.returns(Promise.reject(error));
       var res = {};
       var nextSpy = sandbox.spy();
       auth.basicAuth(reqUserWithValidSecret, res, nextSpy).then(function() {
@@ -139,6 +141,8 @@ describe('auth middleware', function() {
         } catch (error) {
           done(error);
         }
+      }).catch(function(error) {
+        done(error);
       });
     });
   });

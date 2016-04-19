@@ -101,6 +101,7 @@ module.exports.loginPost = function(req, res, next) {
 };
 
 module.exports.introspectPost = function(req, res, next) {
+  console.log('introspect');
   return new Promise(function(resolve) {
     if (!req.body.token) {
       res.status(400).json({code: 400, message: 'missing token'});
