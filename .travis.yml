@@ -5,12 +5,13 @@ node_js:
 compiler: clang-3.8
 env:
   - AUTH_SERVER__DATABASE__HOST=127.0.0.1 AUTH_SERVER__DATABASE__PORT=5432 AUTH_SERVER__DATABASE__DATABASE=auth_server_test AUTH_SERVER__DATABASE__USERNAME=postgres AUTH_SERVER__DATABASE__PASSWORD=
-  - LLVM_VERSION=3.8.0
-  - LLVM_ARCHIVE_PATH=$HOME/clang+llvm.tar.xz
-  - CXX=$HOME/clang-$LLVM_VERSION/bin/clang++
-  - CPPFLAGS="-I $HOME/clang-$LLVM_VERSION/include/c++/v1"
-  - CXXFLAGS=-lc++
-  - LD_LIBRARY_PATH=$HOME/clang-$LLVM_VERSION/lib:$LD_LIBRARY_PATH
+  global:
+    - LLVM_VERSION=3.8.0
+    - LLVM_ARCHIVE_PATH=$HOME/clang+llvm.tar.xz
+    - CXX=$HOME/clang-$LLVM_VERSION/bin/clang++
+    - CPPFLAGS="-I $HOME/clang-$LLVM_VERSION/include/c++/v1"
+    - CXXFLAGS=-lc++
+    - LD_LIBRARY_PATH=$HOME/clang-$LLVM_VERSION/lib:$LD_LIBRARY_PATH
 addons:
   apt:
     sources:
